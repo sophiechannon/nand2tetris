@@ -14,5 +14,20 @@ CHIP DMux {
     OUT a, b;
 
     PARTS:
-    // Put your code here:
+    Not(in=sel, out=notSel);
+
+    And(a=in, b=notSel, out=a);
+
+    // 0 0 (1) = 0 yes
+    // 1 0 (1) = 0 yes
+    // 0 1 (0) = 0 yes
+    // 1 1 (0) = 1 yes
+
+    And(a=in, b=sel, out=b);
+
+    // 0 0 = 0 yes
+    // 1 0 = 0 yes
+    // 0 1 = 0 yes
+    // 1 1 = 1 yes
 }
+  // Dmux(in= ,sel= ,a= ,b= ); 
