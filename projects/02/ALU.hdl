@@ -54,7 +54,14 @@ CHIP ALU {
    Mux16(a=resultOfAnd, b=resultOfAdd, sel=f, out=resultOfF);
    Not16(in=resultOfF, out=negatedResult);
    Mux16(a=resultOfF, b=negatedResult, sel=no, out=out);
-  //  Not16(in=out, out=notOut);
-  //  And16(a=notOut, b=true, out=);
 
+   Mux16(a=resultOfF, b=negatedResult, sel=no, out[0..7]=result0to7);
+   Mux16(a=resultOfF, b=negatedResult, sel=no, out[8..15]=result8to15);
+   Mux16(a=resultOfF, b=negatedResult, sel=no, out[15]=LSB);
+   Or8Way(in=result0to7, out=firstHalf);
+   Or8Way(in=result8to15, out=secondHalf);
+   Not(in=firstHalf, out=notFirstHalf);
+   Not(in=secondHalf, out=notSecondHalf);
+   And(a=notFirstHalf, b=notSecondHalf, out=zr);
+   And(a=LSB, b=LSB, out=ng);
 }
