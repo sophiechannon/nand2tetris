@@ -11,10 +11,24 @@
  * else                    out[t+1] = out[t]
  */
 
+//  load switches it to output the input
+// increment makes it increment from wherever it is
+// reset resets it back to 0
+
 CHIP PC {
     IN in[16],load,inc,reset;
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // increment?
+    Inc16(in=regOut, out=iOut);
+    Mux16(a=regOut, b=iOut, sel=inc, out=incOut);
+    // current or in?
+    Mux16(a=incOut, b=in, sel=load, out=loadOut);
+    // reset?
+    Mux16(a=loadOut, b=false, sel=reset, out=resetOut);
+    // register
+    Register(in=resetOut, load=true, out=regOut);
+    Mux16(a=regOut, b=false, sel=false, out=out);
+
 }
