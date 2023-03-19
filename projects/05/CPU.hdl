@@ -40,4 +40,40 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+    // decode if A or C instruction
+    And(a=instruction[15], b=instruction[15], out=cInstruction);
+    Not(in=cInstruction, out=aInstruction);
+
+    // determine if A Register should be loaded with instruction or alu output   
+    And(a=cInstruction, b=instruction[5], out=loadAFromAlu);
+    Mux16(a=instruction, b=aluOut, sel=loadAFromAlu, out=aInput);
+    Or(a=aInstruction, b=loadAFromAlu, out=writeA);
+    ARegister(in=aInput, load=writeA, out=outA);
+    // a or m 
+    Mux16(a=outA, b=inM, sel=instruction[12], out=aOrM);
+
+    // load up D register?
+    And(a=cInstruction, b=instruction[4], out=writeD);
+    DRegister(in=aluOut, load=writeD, out=outD);
+
+    // ALU
+    ALU(x=outD, y=aOrM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=aluOut, zr=aluZr, ng=aluNg);
+    // writeM
+    And(a=cInstruction, b=instruction[3], out=writeM);
+    // address M
+    Mux16(a=false, b=outA, sel=true, out[0..14]=addressM);
+    // outM
+    Mux16(a=false, b=aluOut, sel=true, out=outM);
+
+    // Jump instruction
+    And(a=instruction[2], b=aluNg, out=JLT);
+    And(a=instruction[1], b=aluZr, out=JEQ);
+    Or(a=aluNg, b=aluZr, out=aluNotPos);
+    Not(in=aluNotPos, out=aluPos);
+    And(a=instruction[0], b=aluPos, out=JGT);
+    Or(a=JLT, b=JEQ, out=JLE);
+    Or(a=JLE, b=JGT, out=jumpPresent);
+    And(a=cInstruction, b=jumpPresent, out=doAJump);
+    Not(in=doAJump, out=increment);
+    PC(in=outA, load=doAJump, inc=increment, reset=reset, out[0..14]=pc);
 }
