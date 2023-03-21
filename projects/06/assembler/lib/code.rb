@@ -41,7 +41,7 @@ class Code
   }
 
   def dest(mnemonic)
-    if mnemonic == nil
+    if mnemonic == nil || mnemonic == "null"
       return "000"
     else
       return DEST[mnemonic.to_sym]
@@ -49,7 +49,7 @@ class Code
   end
 
   def jump(mnemonic)
-    if mnemonic == nil
+    if mnemonic == nil || mnemonic == "null"
       return "000"
     else
       return JUMP[mnemonic.to_sym]

@@ -16,8 +16,10 @@ class Assembler
       write = @parser.counter == 0 ? "w" : "a"
       @parser.advance
       if @parser.command_type == "A_COMMAND"
+        puts "A"
         command = assemble_a_command
       elsif @parser.command_type == "C_COMMAND"
+        puts "C"
         command = assemble_c_command
       end
       write_to_file(command, write)
@@ -47,5 +49,5 @@ class Assembler
   end
 end
 
-assembler = Assembler.new(parser, code)
-assembler.assemble
+# assembler = Assembler.new(parser, code)
+# assembler.assemble

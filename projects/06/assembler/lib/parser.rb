@@ -27,10 +27,10 @@ class Parser
   def command_type
     if (has_dest || @current_command.include?(";"))
       "C_COMMAND"
+    elsif @current_command.start_with?("(")
+      "L_COMMAND"
     else
       "A_COMMAND" 
-    # else
-    #   "L_COMMAND"
     end
   end
 
