@@ -70,13 +70,3 @@ class Parser
     @current_command.include?("=")
   end
 end
-
-# parser = Parser.new('../add/Add.asm')
-# p parser.counter
-# p parser.current_command
-# parser.advance
-# p parser.symbol
-# parser.advance
-# p parser.comp
-# p parser.dest
-# p parser.jump

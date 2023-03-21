@@ -1,6 +1,5 @@
 class Code
   DEST = {
-    null: "000",
     M: "001",
     D: "010",
     MD: "011",
@@ -11,7 +10,6 @@ class Code
   }
 
   JUMP = {
-    null: "000",
     JGT: "001",
     JEQ: "010",
     JGE: "011",
@@ -43,11 +41,19 @@ class Code
   }
 
   def dest(mnemonic)
-    return DEST[mnemonic.to_sym]
+    if mnemonic == nil
+      return "000"
+    else
+      return DEST[mnemonic.to_sym]
+    end
   end
 
   def jump(mnemonic)
-    return JUMP[mnemonic.to_sym]
+    if mnemonic == nil
+      return "000"
+    else
+      return JUMP[mnemonic.to_sym]
+    end
   end
 
   def comp(mnemonic)
