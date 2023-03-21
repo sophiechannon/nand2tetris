@@ -50,13 +50,13 @@ class Parser
     if c_and_dest
       @current_command.split("=")[1]
     elsif command_type == "C_COMMAND" && !has_dest()
-      @current_command.split(":")[0]
+      @current_command.split(";")[0]
     end
   end
 
   def jump 
     if command_type == "C_COMMAND" && !has_dest()
-      @current_command.split(":")[1]
+      @current_command.split(";")[1]
     end
   end
 

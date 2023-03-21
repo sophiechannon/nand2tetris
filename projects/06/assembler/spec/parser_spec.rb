@@ -24,7 +24,7 @@ describe Parser do
     expect(parser.dest).to eq nil
     expect(parser.jump).to eq nil
   end
-  it "advances by two and displays comp dest" do
+  it "advances and displays comp dest jump" do
     parser = Parser.new("./Prog.asm")
     parser.advance
     parser.advance
@@ -34,6 +34,12 @@ describe Parser do
     expect(parser.comp).to eq "A"
     expect(parser.dest).to eq "D"
     expect(parser.jump).to eq nil
+    parser.advance
+    parser.advance
+    parser.advance
+    parser.advance
+    expect(parser.comp).to eq "D"
+    expect(parser.jump).to eq "JMP"
   end
   it "has more commands" do
     parser = Parser.new("./Prog.asm")
