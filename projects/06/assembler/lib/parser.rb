@@ -1,9 +1,13 @@
 class Parser
   attr_reader :counter
   attr_reader :current_command
+  attr_reader :file_name
+  attr_reader :file_dir
 
   def initialize(stream)
     file = File.open(stream)
+    @file_name = File.basename(stream, ".*") 
+    @file_dir = File.dirname(stream)
     @stream = file.readlines
       .map(&:chomp)
       .filter! {|line| !line.start_with?("//") && line != ""}
@@ -11,29 +15,27 @@ class Parser
     @current_command = ""
   end
 
-  def hasMoreCommands
-    # boolean
-    # Are there more commands in the input
-    @count < @stream.length - 1
+  def has_more_commands
+    @counter < @stream.length
   end
 
   def advance
     @current_command = @stream[@counter]
-    @counter =+ 1
+    @counter += 1
   end
 
-  def commandType
-    if @current_command.start_with?("@")
-      "A_COMMAND"
-    elsif has_dest || @current_command.include?(";")
-      "C_COMMAND" 
+  def command_type
+    if (has_dest || @current_command.include?(";"))
+      "C_COMMAND"
     else
-      "L_COMMAND"
+      "A_COMMAND" 
+    # else
+    #   "L_COMMAND"
     end
   end
 
   def symbol
-    if commandType != "C_COMMAND"
+    if command_type != "C_COMMAND"
       return @current_command.sub("@", "")
     end
   end
@@ -47,13 +49,13 @@ class Parser
   def comp
     if c_and_dest
       @current_command.split("=")[1]
-    elsif commandType == "C_COMMAND" && !has_dest()
+    elsif command_type == "C_COMMAND" && !has_dest()
       @current_command.split(":")[0]
     end
   end
 
   def jump 
-    if commandType == "C_COMMAND" && !has_dest()
+    if command_type == "C_COMMAND" && !has_dest()
       @current_command.split(":")[1]
     end
   end
@@ -61,7 +63,7 @@ class Parser
   private
 
   def c_and_dest
-    commandType == "C_COMMAND" && has_dest
+    command_type == "C_COMMAND" && has_dest
   end
 
   def has_dest
@@ -69,12 +71,12 @@ class Parser
   end
 end
 
-parser = Parser.new('../add/Add.asm')
-p parser.counter
-p parser.current_command
-parser.advance
-p parser.symbol
-parser.advance
-p parser.comp
-p parser.dest
-p parser.jump
+# parser = Parser.new('../add/Add.asm')
+# p parser.counter
+# p parser.current_command
+# parser.advance
+# p parser.symbol
+# parser.advance
+# p parser.comp
+# p parser.dest
+# p parser.jump
