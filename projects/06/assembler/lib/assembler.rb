@@ -12,7 +12,7 @@ class Assembler
     @code = code
     @symbol_table = symbol_table
     @counter = 0
-    @var_counter = 1024
+    @var_counter = 16
   end
 
   def assemble
@@ -70,8 +70,6 @@ class Assembler
       binary = @symbol_table.get_address(@parser.symbol).to_s(2)
     else 
       @symbol_table.add_entry(@parser.symbol, @var_counter)
-      p "add table"
-
       binary = @var_counter.to_s(2)
       @var_counter += 1
     end

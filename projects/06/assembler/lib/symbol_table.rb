@@ -32,7 +32,7 @@ class SymbolTable
   end
 
   def contains(symbol)
-    @symbol_hash[symbol] == nil ? false : true
+    !!@symbol_hash[symbol]
   end
 
   def get_address(symbol)
