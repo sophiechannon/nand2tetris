@@ -1,5 +1,5 @@
 class Parser
-  attr_reader :counter
+  attr_accessor :counter
   attr_reader :current_command
   attr_reader :file_name
   attr_reader :file_dir
@@ -20,7 +20,8 @@ class Parser
   end
 
   def advance
-    @current_command = @stream[@counter]
+    res = @stream[@counter]
+    @current_command = ignore_comments(res)
     @counter += 1
   end
 
@@ -29,34 +30,37 @@ class Parser
       "C_COMMAND"
     elsif @current_command.start_with?("(")
       "L_COMMAND"
-    else
+    elsif @current_command.start_with?("@")
       "A_COMMAND" 
     end
   end
 
   def symbol
-    if command_type != "C_COMMAND"
-      return @current_command.sub("@", "")
+    if command_type == "A_COMMAND"
+      res = @current_command.sub("@R", "").sub("@", "")
+      ignore_comments(res)
     end
   end
 
   def dest
     if c_and_dest
-      return @current_command.split("=")[0]
+      @current_command.split("=")[0].strip
     end
   end
 
   def comp
     if c_and_dest
-      @current_command.split("=")[1]
+      res = @current_command.split("=")[1]
+      ignore_comments(res)
     elsif command_type == "C_COMMAND" && !has_dest()
-      @current_command.split(";")[0]
+      @current_command.split(";")[0].strip
     end
   end
 
   def jump 
     if command_type == "C_COMMAND" && !has_dest()
-      @current_command.split(";")[1]
+      res = @current_command.split(";")[1]
+      ignore_comments(res)
     end
   end
 
@@ -68,5 +72,9 @@ class Parser
 
   def has_dest
     @current_command.include?("=")
+  end
+
+  def ignore_comments(string)
+    string.split("//")[0].strip
   end
 end

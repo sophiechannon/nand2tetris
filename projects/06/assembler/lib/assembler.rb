@@ -1,30 +1,50 @@
 require './lib/code.rb'
 require './lib/parser.rb'
+require './lib/symbol_table.rb'
 
-parser = Parser.new('../pong/PongL.asm')
+parser = Parser.new('../max/Max.asm')
 code = Code.new
+symbol_table = SymbolTable.new
 
 class Assembler
-  def initialize(parser, code)
+  def initialize(parser, code, symbol_table)
     @parser = parser
     @code = code
+    @symbol_table = symbol_table
+    @counter = 0
   end
 
   def assemble
+    first_pass
+    second_pass
+  end
+
+  private
+
+  def first_pass
+    while @parser.has_more_commands
+      @parser.advance
+      if @parser.command_type != "L_COMMAND"
+        @counter += 1
+      else
+        handle_l_command
+      end
+    end
+  end
+
+  def second_pass
+    @parser.counter = 0
     while @parser.has_more_commands
       command = ""
       write = @parser.counter == 0 ? "w" : "a"
       @parser.advance
       if @parser.command_type == "A_COMMAND"
-        command = assemble_a_command
+        write_to_file(assemble_a_command, write)
       elsif @parser.command_type == "C_COMMAND"
-        command = assemble_c_command
+        write_to_file(assemble_c_command, write)
       end
-      write_to_file(command, write)
     end
   end
-
-  private
 
   def write_to_file(string, write)
     File.write(@parser.file_dir + "/" + get_file_name, string + "\n", mode: write)
@@ -34,18 +54,26 @@ class Assembler
     @parser.file_name + ".hack"
   end
 
+  def handle_l_command
+    l_command = @parser.current_command[1..-2]
+    if !@symbol_table.contains(l_command)
+      @symbol_table.add_entry(l_command, @counter)
+    end
+  end
+
   def assemble_a_command
-    res = @parser.symbol.sub("@", "").to_i.to_s(2)
-    remaining_zeros = 16 - res.length
-    res = "0" * remaining_zeros + res
-    res
+    binary = @parser.symbol.to_i.to_s(2)
+    if @symbol_table.contains(@parser.symbol)
+      binary = @symbol_table.get_address(@parser.symbol).to_s(2)
+    end
+    remaining_zeros = 16 - binary.length
+    "0" * remaining_zeros + binary
   end
 
   def assemble_c_command
-    res = "111" + @code.comp(@parser.comp) + @code.dest(@parser.dest) + @code.jump(@parser.jump)
-    res
+    "111" + @code.comp(@parser.comp) + @code.dest(@parser.dest) + @code.jump(@parser.jump)
   end
 end
 
-assembler = Assembler.new(parser, code)
+assembler = Assembler.new(parser, code, symbol_table)
 assembler.assemble
