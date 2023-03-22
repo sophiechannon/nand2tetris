@@ -2,7 +2,7 @@ require './lib/code.rb'
 require './lib/parser.rb'
 require './lib/symbol_table.rb'
 
-parser = Parser.new('../max/Max.asm')
+parser = Parser.new('../pong/Pong.asm')
 code = Code.new
 symbol_table = SymbolTable.new
 
@@ -12,6 +12,7 @@ class Assembler
     @code = code
     @symbol_table = symbol_table
     @counter = 0
+    @var_counter = 1024
   end
 
   def assemble
@@ -62,9 +63,17 @@ class Assembler
   end
 
   def assemble_a_command
-    binary = @parser.symbol.to_i.to_s(2)
-    if @symbol_table.contains(@parser.symbol)
+    binary = ""
+    if not_symbol?
+       binary = @parser.symbol.to_i.to_s(2)
+    elsif @symbol_table.contains(@parser.symbol)
       binary = @symbol_table.get_address(@parser.symbol).to_s(2)
+    else 
+      @symbol_table.add_entry(@parser.symbol, @var_counter)
+      p "add table"
+
+      binary = @var_counter.to_s(2)
+      @var_counter += 1
     end
     remaining_zeros = 16 - binary.length
     "0" * remaining_zeros + binary
@@ -72,6 +81,10 @@ class Assembler
 
   def assemble_c_command
     "111" + @code.comp(@parser.comp) + @code.dest(@parser.dest) + @code.jump(@parser.jump)
+  end
+
+  def not_symbol?
+    @parser.symbol.scan(/\D/).empty?
   end
 end
 

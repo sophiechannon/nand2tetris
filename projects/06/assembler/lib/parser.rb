@@ -37,7 +37,7 @@ class Parser
 
   def symbol
     if command_type == "A_COMMAND"
-      res = @current_command.sub("@R", "").sub("@", "")
+      res = @current_command.sub("@", "")
       ignore_comments(res)
     end
   end
