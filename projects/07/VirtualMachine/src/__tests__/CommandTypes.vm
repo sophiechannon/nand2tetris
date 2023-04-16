@@ -1,5 +1,5 @@
 add
 sub
-push
-if-goto
+push constant 7
+if-goto end
 return
