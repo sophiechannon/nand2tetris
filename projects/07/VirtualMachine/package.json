@@ -1,15 +1,20 @@
 {
+  "name": "virtualmachine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.0.3"
-  },
-  "scripts": {
-    "test": "jest"
-  },
-  "type": "module",
-  "dependencies": {
-    "fs": "^0.0.1-security"
+    "typescript": "^5.0.4"
   }
 }
