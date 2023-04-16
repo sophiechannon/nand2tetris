@@ -1,10 +1,5 @@
 import * as fs from "fs";
-
-const arithmetic = ["add", "sub", "neg", "eq", "gt", "lt", "and", "or", "not"];
-const arg_2_valid = ["C_RETURN", "C_CALL", "C_POP", "C_PUSH"];
-
-const getCommandOrArg = (line: string, index: number) =>
-  line?.split(" ")[index];
+import { getCommandOrArg, COMMAND_TYPE_MAP, Ctm } from "./util";
 
 export default class Parser {
   file: string[];
@@ -31,25 +26,23 @@ export default class Parser {
     this.counter++;
   }
 
-  commandType() {
+  commandType(): string {
     const command = getCommandOrArg(this.currentCommand, 0);
-    if (arithmetic.includes(command)) return "C_ARITHMETIC";
-    if (command === "if-goto") return "C_IF";
-    return `C_${command?.toUpperCase()}`;
+    return COMMAND_TYPE_MAP[command as keyof Ctm].type;
   }
 
   arg1() {
     const command = getCommandOrArg(this.currentCommand, 0);
-    if (command === "return") return;
-    if (arithmetic.includes(command)) {
-      return command;
-    }
-
-    return getCommandOrArg(this.currentCommand, 1);
+    const isArg1 = COMMAND_TYPE_MAP[command as keyof Ctm].arg1;
+    const arg1 = getCommandOrArg(this.currentCommand, 1);
+    if (isArg1 === "self") return command;
+    if (!!isArg1) return arg1;
   }
 
   arg2() {
-    const arg = getCommandOrArg(this.currentCommand, 2);
-    if (arg_2_valid.includes(this.commandType())) return arg;
+    const command = getCommandOrArg(this.currentCommand, 0);
+    const isArg2 = COMMAND_TYPE_MAP[command as keyof Ctm].arg2;
+    const arg2 = parseInt(getCommandOrArg(this.currentCommand, 2));
+    if (isArg2) return arg2;
   }
 }

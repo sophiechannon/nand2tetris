@@ -38,7 +38,7 @@ describe("Parser", () => {
     parser.advance();
     expect(parser.arg2()).toBe(undefined);
     parser.advance();
-    expect(parser.arg2()).toBe("7");
+    expect(parser.arg2()).toBe(7);
     parser.advance();
     expect(parser.arg2()).toBe(undefined);
     parser.advance();
