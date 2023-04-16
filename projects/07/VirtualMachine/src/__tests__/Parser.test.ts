@@ -18,7 +18,7 @@ describe("Parser", () => {
     parser.advance();
     expect(parser.commandType()).toEqual("C_RETURN");
   });
-  it("returns correct first args", () => {
+  it("returns correct first arg", () => {
     const parser = new Parser("src/__tests__/CommandTypes.vm");
     parser.advance();
     expect(parser.arg1()).toBe("add");
@@ -30,5 +30,18 @@ describe("Parser", () => {
     expect(parser.arg1()).toBe("end");
     parser.advance();
     expect(parser.arg1()).toBe(undefined);
+  });
+  it("returns correct second arg", () => {
+    const parser = new Parser("src/__tests__/CommandTypes.vm");
+    parser.advance();
+    expect(parser.arg2()).toBe(undefined);
+    parser.advance();
+    expect(parser.arg2()).toBe(undefined);
+    parser.advance();
+    expect(parser.arg2()).toBe("7");
+    parser.advance();
+    expect(parser.arg2()).toBe(undefined);
+    parser.advance();
+    expect(parser.arg2()).toBe(undefined);
   });
 });
