@@ -1,7 +1,7 @@
 import * as fs from "fs";
-import { getCommandOrArg, COMMAND_TYPE_MAP, Ctm } from "./util";
+import { getCommandOrArg, COMMAND_TYPE_MAP, Ctm } from "./util.js";
 
-export default class Parser {
+export class Parser {
   file: string[];
   counter: number;
   currentCommand: string;
