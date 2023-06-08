@@ -2,7 +2,7 @@ require './lib/code.rb'
 require './lib/parser.rb'
 require './lib/symbol_table.rb'
 
-parser = Parser.new('../pong/Pong.asm')
+parser = Parser.new('../pong/PongL.asm')
 code = Code.new
 symbol_table = SymbolTable.new
 

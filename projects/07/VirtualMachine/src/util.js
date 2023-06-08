@@ -1,4 +1,7 @@
-export const COMMAND_TYPE_MAP = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCommandOrArg = exports.COMMAND_TYPE_MAP = void 0;
+exports.COMMAND_TYPE_MAP = {
     add: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
     sub: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
     neg: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
@@ -17,5 +20,6 @@ export const COMMAND_TYPE_MAP = {
     return: { type: "C_RETURN", arg1: false, arg2: false },
     call: { type: "C_CALL", arg1: true, arg2: true },
 };
-export const getCommandOrArg = (line, index) => line === null || line === void 0 ? void 0 : line.split(" ")[index];
+const getCommandOrArg = (line, index) => line === null || line === void 0 ? void 0 : line.split(" ")[index];
+exports.getCommandOrArg = getCommandOrArg;
 //# sourceMappingURL=util.js.map

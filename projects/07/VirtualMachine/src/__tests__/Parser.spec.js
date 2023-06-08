@@ -1,11 +1,13 @@
-import { Parser } from "./../Parser.js";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const Parser_js_1 = require("./../Parser.js");
 describe("Parser", () => {
     it("getsFile", () => {
-        const parser = new Parser("src/__tests__/Sample.vm");
+        const parser = new Parser_js_1.Parser("src/__tests__/Sample.vm");
         expect(parser.getFile()).toEqual(["first line", "second line"]);
     });
     it("advances and returns commandType", () => {
-        const parser = new Parser("src/__tests__/CommandTypes.vm");
+        const parser = new Parser_js_1.Parser("src/__tests__/CommandTypes.vm");
         parser.advance();
         expect(parser.commandType()).toEqual("C_ARITHMETIC");
         parser.advance();
@@ -18,7 +20,7 @@ describe("Parser", () => {
         expect(parser.commandType()).toEqual("C_RETURN");
     });
     it("returns correct first arg", () => {
-        const parser = new Parser("src/__tests__/CommandTypes.vm");
+        const parser = new Parser_js_1.Parser("src/__tests__/CommandTypes.vm");
         parser.advance();
         expect(parser.arg1()).toBe("add");
         parser.advance();
@@ -31,7 +33,7 @@ describe("Parser", () => {
         expect(parser.arg1()).toBe(undefined);
     });
     it("returns correct second arg", () => {
-        const parser = new Parser("src/__tests__/CommandTypes.vm");
+        const parser = new Parser_js_1.Parser("src/__tests__/CommandTypes.vm");
         parser.advance();
         expect(parser.arg2()).toBe(undefined);
         parser.advance();
