@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { ARITHMETIC_COMMANDS, twoPartArithmetic } from "./util";
 
 class CodeWriter {
   name: string;
@@ -13,16 +14,9 @@ class CodeWriter {
   }
 
   writeArithmetic(command: string) {
-    // add
-    // @SP
-    // M = M - 1
-    // A = M
-    // D = M
-    // @SP
-    // M = M - 1
-    // A = M
-    // M = A + D
-    // M = M + 1
+    if (Object.keys(ARITHMETIC_COMMANDS).includes(command)) {
+      twoPartArithmetic(command); //write this
+    }
   }
 
   writePushPop(command: "C_PUSH" | "C_POP", segment: string, index: number) {

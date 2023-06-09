@@ -20,5 +20,27 @@ export const COMMAND_TYPE_MAP = {
   call: { type: "C_CALL", arg1: true, arg2: true },
 };
 
+export type ac = typeof ARITHMETIC_COMMANDS;
+
+export const ARITHMETIC_COMMANDS = {
+  add: "+",
+  sub: "-",
+  and: "&",
+  or: "|",
+  not: "!",
+};
+
 export const getCommandOrArg = (line: string, index: number) =>
   line?.split(" ")[index];
+
+export const twoPartArithmetic = (command: string) => {
+  `M=M-1\n` + // (Memory[4] = Memory[4] - 1 (i.e. 99))
+    `A=M\n` + // (A = Memory[99] e.g. 50)
+    `D=M\n` + // (D = Memory[99] e.g. 50)
+    `@SP\n` + // (99)
+    `M=M-1\n` + // (Memory[4] = Memory[4] - 1 (i.e. 98))
+    `A=M\n` + // (A = Memory[98] e.g. 60)
+    `M=M${ARITHMETIC_COMMANDS[command as keyof ac]}D\n` + // (M = Memory[98] 60 + 50)
+    `@SP\n` + // Memory[4] 98
+    `M=M+1\n`; // @SP = 99
+};
