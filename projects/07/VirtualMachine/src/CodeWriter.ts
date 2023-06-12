@@ -1,11 +1,13 @@
 import * as fs from "fs";
-import { ARITHMETIC_COMMANDS, twoPartArithmetic } from "./util";
+import { ARITHMETIC_COMMANDS, binaryOperation, unaryOperation } from "./util";
 
 class CodeWriter {
   name: string;
+  path: string;
 
   constructor(outputFilePath: string) {
-    const createFile = fs.writeFileSync(outputFilePath, "");
+    fs.writeFileSync(outputFilePath, "");
+    this.path = outputFilePath;
     this.name = "";
   }
 
@@ -14,9 +16,14 @@ class CodeWriter {
   }
 
   writeArithmetic(command: string) {
-    if (Object.keys(ARITHMETIC_COMMANDS).includes(command)) {
-      twoPartArithmetic(command); //write this
+    let operation = "";
+    if (["add", "sub", "add", "or"].includes(command)) {
+      operation = binaryOperation(command);
+    } else if (["neg", "not"].includes(command)) {
+      operation = unaryOperation(command);
+    } else {
     }
+    fs.writeFileSync(this.path, operation); //write this
   }
 
   writePushPop(command: "C_PUSH" | "C_POP", segment: string, index: number) {
@@ -25,11 +32,6 @@ class CodeWriter {
     // by first decrementing sp and then returning the value stored in the top position (i.e.,
     // sp=sp-1; return stack[sp]).
     // push
-    // @SP
-    // A=M
-    // M=x
-    // M=M + 1
-    //
   }
 
   close() {}
