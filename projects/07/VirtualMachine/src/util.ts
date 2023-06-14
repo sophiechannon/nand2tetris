@@ -20,7 +20,18 @@ export const COMMAND_TYPE_MAP = {
   call: { type: "C_CALL", arg1: true, arg2: true },
 };
 
-export type ac = typeof ARITHMETIC_COMMANDS;
+export const SEGMENT_MAP = {
+  argument: "ARG",
+  local: "LCL",
+  static: "",
+  constant: "",
+  this: "THIS",
+  that: "THAT",
+  pointer: "SP",
+  temp: "TMP",
+};
+
+export type AC = typeof ARITHMETIC_COMMANDS;
 
 export const ARITHMETIC_COMMANDS = {
   add: "+",
@@ -34,41 +45,9 @@ export const ARITHMETIC_COMMANDS = {
 export const getCommandOrArg = (line: string, index: number) =>
   line?.split(" ")[index];
 
-const prepareForBinary =
-  `@SP\n` + // set A register to contents of SP (100)
-  `M=M-1\n` + // (Memory[4] = Memory[4] - 1 (i.e. 99))
-  `A=M\n` + // (A = 99)
-  `D=M\n` + // (D = Memory[99] e.g. 50)
-  `@SP\n` + // (99)
-  `M=M-1\n` + // (Memory[4] = Memory[4] - 1 (i.e. 98))
-  `A=M\n`; // (A = 98)
+export const incrementSP = `@SP\n` + `M=M+1\n`; // // Memory[SP] = Memory[SP] + 1
 
-export const unaryOperation = (op: string) =>
-  `@SP\n` + // 100
-  `M=M-1\n` + // SP = SP - 1 (i.e. 99))
-  `A=M\n` + // (A = 99)
-  `M=${ARITHMETIC_COMMANDS[op as keyof ac]}M\n` + // Memory[99] = - Memory[99] e.g. - 50
-  `@SP\n` + // 99
-  `M=M+1\n`; // SP = 100
-
-export const binaryOperation = (op: string) =>
-  prepareForBinary +
-  `M=M${ARITHMETIC_COMMANDS[op as keyof ac]}D\n` + // (M = Memory[98] 60 + 50)
-  `@SP\n` + // Memory[4] 98
-  `M=M+1\n`; // @SP = 99
-
-export const compareOperation = (op: string) =>
-  prepareForBinary + // D is set to value of top of stack, a is set to address of next down
-  `D=M-D` + // minus the 2nd from top of stack from top of stack
-  `@TRUE` + // set a to @TRUE
-  `D;J${op.toUpperCase()}`; // if D < = > 0 jump to true
-// what happens if not
-//
-
-export const push = () => {};
-
-// @SP
-// A=M
-// M=x
-// @SP
-// M=M+1
+export const popFromTop =
+  `@SP\n` + // set A register value of SP
+  `M=M-1\n` + // Memory[SP] = Memory[SP] - 1
+  `A=M\n`; // A = Memory[SP]
