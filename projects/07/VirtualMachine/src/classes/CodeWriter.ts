@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { AC, ARITHMETIC_COMMANDS } from "../types/types";
-import { incrementSP, popFromTop } from "../utils/util";
+import { incrementSP, popFromTop, initialCode } from "../utils/util";
 
 export class CodeWriter {
   fileDescriptor: number;
@@ -20,7 +20,7 @@ export class CodeWriter {
 
   writeArithmetic(command: string) {
     let operation = "";
-    if (["add", "sub", "add", "or"].includes(command)) {
+    if (["add", "sub", "and", "or"].includes(command)) {
       operation = this.#binaryOperation(command);
     } else if (["neg", "not"].includes(command)) {
       operation = this.#unaryOperation(command);
@@ -44,8 +44,7 @@ export class CodeWriter {
   }
 
   #initializeStack() {
-    const initialize = `@256\n` + `D=A\n` + `@SP\n` + `M=D\n`;
-    fs.writeFileSync(this.path, initialize);
+    fs.writeFileSync(this.path, initialCode);
   }
 
   #unaryOperation(op: string) {

@@ -46,7 +46,7 @@ class CodeWriter {
     }
     writeArithmetic(command) {
         let operation = "";
-        if (["add", "sub", "add", "or"].includes(command)) {
+        if (["add", "sub", "and", "or"].includes(command)) {
             operation = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_binaryOperation).call(this, command);
         }
         else if (["neg", "not"].includes(command)) {
@@ -67,8 +67,7 @@ class CodeWriter {
 }
 exports.CodeWriter = CodeWriter;
 _CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _CodeWriter_initializeStack() {
-    const initialize = `@256\n` + `D=A\n` + `@SP\n` + `M=D\n`;
-    fs.writeFileSync(this.path, initialize);
+    fs.writeFileSync(this.path, util_1.initialCode);
 }, _CodeWriter_unaryOperation = function _CodeWriter_unaryOperation(op) {
     return (util_1.popFromTop + `M=${types_1.ARITHMETIC_COMMANDS[op]}M\n` + util_1.incrementSP);
 }, _CodeWriter_binaryOperation = function _CodeWriter_binaryOperation(op) {

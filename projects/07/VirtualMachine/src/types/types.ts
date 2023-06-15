@@ -23,12 +23,9 @@ export const COMMAND_TYPE_MAP = {
 export const SEGMENT_MAP = {
   argument: "ARG",
   local: "LCL",
-  static: "",
-  constant: "",
   this: "THIS",
   that: "THAT",
   pointer: "SP",
-  temp: "TMP",
 };
 
 export type AC = typeof ARITHMETIC_COMMANDS;
