@@ -1,7 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCommandOrArg = exports.COMMAND_TYPE_MAP = void 0;
-exports.COMMAND_TYPE_MAP = {
+export type Ctm = typeof COMMAND_TYPE_MAP;
+
+export const COMMAND_TYPE_MAP = {
   add: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
   sub: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
   neg: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
@@ -21,7 +20,24 @@ exports.COMMAND_TYPE_MAP = {
   call: { type: "C_CALL", arg1: true, arg2: true },
 };
 
-const getCommandOrArg = (line, index) =>
-  line === null || line === void 0 ? void 0 : line.split(" ")[index];
-exports.getCommandOrArg = getCommandOrArg;
-//# sourceMappingURL=util.js.map
+export const SEGMENT_MAP = {
+  argument: "ARG",
+  local: "LCL",
+  static: "",
+  constant: "",
+  this: "THIS",
+  that: "THAT",
+  pointer: "SP",
+  temp: "TMP",
+};
+
+export type AC = typeof ARITHMETIC_COMMANDS;
+
+export const ARITHMETIC_COMMANDS = {
+  add: "+",
+  sub: "-",
+  and: "&",
+  or: "|",
+  not: "!",
+  neg: "-",
+};

@@ -1,14 +1,14 @@
 import * as fs from "fs";
-import { ARITHMETIC_COMMANDS, AC, incrementSP, popFromTop } from "./util";
+import { AC, ARITHMETIC_COMMANDS } from "../types/types";
+import { incrementSP, popFromTop } from "../utils/util";
 
-class CodeWriter {
+export class CodeWriter {
+  fileDescriptor: number;
   name: string;
   path: string;
 
   constructor(outputFilePath: string) {
-    const file = fs.open(outputFilePath, "w", () =>
-      console.log(`${outputFilePath} ready to write`)
-    );
+    this.fileDescriptor = fs.openSync(outputFilePath, "w");
     this.path = outputFilePath;
     this.name = "";
     this.#initializeStack();
@@ -27,7 +27,7 @@ class CodeWriter {
     } else {
       operation = this.#compareOperation(command);
     }
-    fs.appendFileSync(this.path, operation); //write this
+    fs.appendFileSync(this.path, operation);
   }
 
   writePushPop(command: "C_PUSH" | "C_POP", segment: string, index: number) {
@@ -36,13 +36,16 @@ class CodeWriter {
     // by first decrementing sp and then returning the value stored in the top position (i.e.,
     // sp=sp-1; return stack[sp]).
     const result = this.#push(index);
-    fs.writeFileSync(this.path, result);
+    fs.appendFileSync(this.path, result);
   }
 
-  close() {}
+  close() {
+    fs.close(this.fileDescriptor);
+  }
 
   #initializeStack() {
-    return `@256\n` + `D=A\n` + `@SP\n` + `M=D\n`;
+    const initialize = `@256\n` + `D=A\n` + `@SP\n` + `M=D\n`;
+    fs.writeFileSync(this.path, initialize);
   }
 
   #unaryOperation(op: string) {

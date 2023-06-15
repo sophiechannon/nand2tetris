@@ -1,5 +1,6 @@
 import * as fs from "fs";
-import { getCommandOrArg, COMMAND_TYPE_MAP, Ctm } from "./util.js";
+import { getCommandOrArg } from "../utils/util";
+import { COMMAND_TYPE_MAP, Ctm } from "../types/types";
 
 export class Parser {
   file: string[];

@@ -5,11 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.runProgram = void 0;
 const process_1 = __importDefault(require("process"));
-const Parser_js_1 = require("./Parser.js");
+const Parser_1 = require("./classes/Parser");
 const runProgram = () => {
-    const p = new Parser_js_1.Parser(process_1.default.argv[2]);
+    const p = new Parser_1.Parser(process_1.default.argv[2]);
     console.log(p.getFile());
 };
 exports.runProgram = runProgram;
 (0, exports.runProgram)();
-//# sourceMappingURL=runProgram.js.map
+//# sourceMappingURL=main.js.map

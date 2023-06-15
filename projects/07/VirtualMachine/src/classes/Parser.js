@@ -25,7 +25,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
 const fs = __importStar(require("fs"));
-const util_js_1 = require("./util.js");
+const util_1 = require("../utils/util");
+const types_1 = require("../types/types");
 class Parser {
     constructor(filePath) {
         const openFile = fs.readFileSync(filePath, "utf8");
@@ -44,22 +45,22 @@ class Parser {
         this.counter++;
     }
     commandType() {
-        const command = (0, util_js_1.getCommandOrArg)(this.currentCommand, 0);
-        return util_js_1.COMMAND_TYPE_MAP[command].type;
+        const command = (0, util_1.getCommandOrArg)(this.currentCommand, 0);
+        return types_1.COMMAND_TYPE_MAP[command].type;
     }
     arg1() {
-        const command = (0, util_js_1.getCommandOrArg)(this.currentCommand, 0);
-        const isArg1 = util_js_1.COMMAND_TYPE_MAP[command].arg1;
-        const arg1 = (0, util_js_1.getCommandOrArg)(this.currentCommand, 1);
+        const command = (0, util_1.getCommandOrArg)(this.currentCommand, 0);
+        const isArg1 = types_1.COMMAND_TYPE_MAP[command].arg1;
+        const arg1 = (0, util_1.getCommandOrArg)(this.currentCommand, 1);
         if (isArg1 === "self")
             return command;
         if (!!isArg1)
             return arg1;
     }
     arg2() {
-        const command = (0, util_js_1.getCommandOrArg)(this.currentCommand, 0);
-        const isArg2 = util_js_1.COMMAND_TYPE_MAP[command].arg2;
-        const arg2 = parseInt((0, util_js_1.getCommandOrArg)(this.currentCommand, 2));
+        const command = (0, util_1.getCommandOrArg)(this.currentCommand, 0);
+        const isArg2 = types_1.COMMAND_TYPE_MAP[command].arg2;
+        const arg2 = parseInt((0, util_1.getCommandOrArg)(this.currentCommand, 2));
         if (isArg2)
             return arg2;
     }
