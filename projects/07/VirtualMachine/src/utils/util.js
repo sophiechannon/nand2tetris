@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initialCode = exports.popFromTop = exports.incrementSP = exports.getCommandOrArg = void 0;
-const getCommandOrArg = (line, index) => line === null || line === void 0 ? void 0 : line.split(" ")[index];
+const getCommandOrArg = (line, index) => { var _a; return (_a = line === null || line === void 0 ? void 0 : line.split(" ")[index]) === null || _a === void 0 ? void 0 : _a.trim(); };
 exports.getCommandOrArg = getCommandOrArg;
 exports.incrementSP = `@SP\n` + `M=M+1\n`;
 exports.popFromTop = `@SP\n` +

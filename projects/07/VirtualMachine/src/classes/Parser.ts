@@ -14,10 +14,6 @@ export class Parser {
     this.currentCommand = "";
   }
 
-  getFile() {
-    return this.file;
-  }
-
   hasMoreCommands() {
     return this.counter < this.file.length;
   }
@@ -29,7 +25,7 @@ export class Parser {
 
   commandType(): string {
     const command = getCommandOrArg(this.currentCommand, 0);
-    return COMMAND_TYPE_MAP[command as keyof Ctm].type;
+    return COMMAND_TYPE_MAP[command as keyof Ctm]?.type;
   }
 
   arg1() {
@@ -38,6 +34,7 @@ export class Parser {
     const arg1 = getCommandOrArg(this.currentCommand, 1);
     if (isArg1 === "self") return command;
     if (!!isArg1) return arg1;
+    return "";
   }
 
   arg2() {

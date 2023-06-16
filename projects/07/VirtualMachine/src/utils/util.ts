@@ -1,5 +1,5 @@
 export const getCommandOrArg = (line: string, index: number) =>
-  line?.split(" ")[index];
+  line?.split(" ")[index]?.trim();
 
 export const incrementSP = `@SP\n` + `M=M+1\n`; // // Memory[SP] = Memory[SP] + 1
 

@@ -58,10 +58,14 @@ class CodeWriter {
         fs.appendFileSync(this.path, operation);
     }
     writePushPop(command, segment, index) {
-        const result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_push).call(this, index);
-        fs.appendFileSync(this.path, result);
+        console.log("hi");
+        if (index) {
+            const result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_push).call(this, index);
+            fs.appendFileSync(this.path, result);
+        }
     }
     close() {
+        fs.appendFileSync(this.path, "(END)\n@END\n0;JMP");
         fs.close(this.fileDescriptor);
     }
 }

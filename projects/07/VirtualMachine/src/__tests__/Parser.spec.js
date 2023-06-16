@@ -2,10 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Parser_1 = require("../classes/Parser");
 describe("Parser", () => {
-    it("getsFile", () => {
-        const parser = new Parser_1.Parser("src/__tests__/Sample.vm");
-        expect(parser.getFile()).toEqual(["first line", "second line"]);
-    });
     it("advances and returns commandType", () => {
         const parser = new Parser_1.Parser("src/__tests__/CommandTypes.vm");
         parser.advance();
@@ -30,7 +26,7 @@ describe("Parser", () => {
         parser.advance();
         expect(parser.arg1()).toBe("end");
         parser.advance();
-        expect(parser.arg1()).toBe(undefined);
+        expect(parser.arg1()).toBe("");
     });
     it("returns correct second arg", () => {
         const parser = new Parser_1.Parser("src/__tests__/CommandTypes.vm");

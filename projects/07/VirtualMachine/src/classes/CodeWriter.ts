@@ -30,16 +30,21 @@ export class CodeWriter {
     fs.appendFileSync(this.path, operation);
   }
 
-  writePushPop(command: "C_PUSH" | "C_POP", segment: string, index: number) {
+  writePushPop(command: string, segment: string, index?: number) {
+    console.log("hi");
+
     // the push command is then implemented by storing x at the array entry pointed by sp and then
     // incrementing sp (i.e., stack[sp]=x; sp=sp+1). The pop operation is implemented
     // by first decrementing sp and then returning the value stored in the top position (i.e.,
     // sp=sp-1; return stack[sp]).
-    const result = this.#push(index);
-    fs.appendFileSync(this.path, result);
+    if (index) {
+      const result = this.#push(index);
+      fs.appendFileSync(this.path, result);
+    }
   }
 
   close() {
+    fs.appendFileSync(this.path, "(END)\n@END\n0;JMP");
     fs.close(this.fileDescriptor);
   }
 

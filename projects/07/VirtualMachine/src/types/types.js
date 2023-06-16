@@ -23,12 +23,9 @@ exports.COMMAND_TYPE_MAP = {
 exports.SEGMENT_MAP = {
     argument: "ARG",
     local: "LCL",
-    static: "",
-    constant: "",
     this: "THIS",
     that: "THAT",
     pointer: "SP",
-    temp: "TMP",
 };
 exports.ARITHMETIC_COMMANDS = {
     add: "+",

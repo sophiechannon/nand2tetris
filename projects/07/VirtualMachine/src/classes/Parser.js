@@ -34,9 +34,6 @@ class Parser {
         this.counter = 0;
         this.currentCommand = "";
     }
-    getFile() {
-        return this.file;
-    }
     hasMoreCommands() {
         return this.counter < this.file.length;
     }
@@ -45,8 +42,9 @@ class Parser {
         this.counter++;
     }
     commandType() {
+        var _a;
         const command = (0, util_1.getCommandOrArg)(this.currentCommand, 0);
-        return types_1.COMMAND_TYPE_MAP[command].type;
+        return (_a = types_1.COMMAND_TYPE_MAP[command]) === null || _a === void 0 ? void 0 : _a.type;
     }
     arg1() {
         const command = (0, util_1.getCommandOrArg)(this.currentCommand, 0);
@@ -56,6 +54,7 @@ class Parser {
             return command;
         if (!!isArg1)
             return arg1;
+        return "";
     }
     arg2() {
         const command = (0, util_1.getCommandOrArg)(this.currentCommand, 0);
