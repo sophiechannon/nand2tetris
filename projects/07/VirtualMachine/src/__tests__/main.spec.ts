@@ -1,11 +1,11 @@
-import { translate } from "../main";
+import { main } from "../main";
 import * as fs from "fs";
 import { initialCode, popFromTop, incrementSP } from "../utils/util";
 const simpleAdd = "../StackArithmetic/SimpleAdd/SimpleAdd.vm";
 
 describe("translate", () => {
   it("translate the simple add file", () => {
-    translate(simpleAdd);
+    main(simpleAdd);
     expect(
       fs.readFileSync(simpleAdd.split(".vm")[0] + ".asm").toString()
     ).toEqual(

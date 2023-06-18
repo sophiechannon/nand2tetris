@@ -3,21 +3,26 @@ import { AC, ARITHMETIC_COMMANDS } from "../types/types.js";
 import { incrementSP, popFromTop, initialCode } from "../utils/util.js";
 
 export class CodeWriter {
-  fileDescriptor: number;
   name: string;
+  outputDir: string;
   path: string;
   compCounter: number;
+  fileDescriptor?: number;
 
   constructor(outputFilePath: string) {
-    this.fileDescriptor = fs.openSync(outputFilePath, "w");
-    this.path = outputFilePath;
+    this.outputDir = outputFilePath;
+    this.path = "";
     this.name = "";
     this.compCounter = 0;
-    this.#initializeStack();
+    this.fileDescriptor = undefined;
   }
 
   setFileName(fileName: string) {
     this.name = fileName;
+    const dir = this.outputDir + "/" + fileName + ".asm";
+    this.path = dir;
+    this.fileDescriptor = fs.openSync(dir, "w");
+    this.#initializeStack(dir);
   }
 
   writeArithmetic(command: string) {
@@ -42,11 +47,11 @@ export class CodeWriter {
 
   close() {
     fs.appendFileSync(this.path, "(END)\n@END\n0;JMP");
-    fs.close(this.fileDescriptor);
+    if (this.fileDescriptor) fs.close(this.fileDescriptor);
   }
 
-  #initializeStack() {
-    fs.writeFileSync(this.path, initialCode);
+  #initializeStack(path: string) {
+    fs.writeFileSync(path, initialCode);
   }
 
   #unaryOperation(op: string) {

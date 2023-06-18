@@ -1,3 +1,6 @@
+import Path from "path";
+import * as fs from "fs";
+
 export const getCommandOrArg = (line: string, index: number) =>
   line?.split(" ")[index]?.trim();
 
@@ -9,3 +12,14 @@ export const popFromTop =
   `A=M\n`; // A = Memory[SP]
 
 export const initialCode = `@256\nD=A\n@SP\nM=D\n`;
+
+export const isVMFile = (file: string) => Path.parse(file).ext === ".vm";
+
+export const getDirectory = (path: string) =>
+  Path.parse(path).ext ? Path.parse(path).dir : path;
+
+export const getVMFiles = (path: string) =>
+  fs
+    .readdirSync(path)
+    .filter((file) => isVMFile(file))
+    .map((file) => path + "/" + file);

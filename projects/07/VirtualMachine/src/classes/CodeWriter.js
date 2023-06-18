@@ -10,14 +10,18 @@ import { incrementSP, popFromTop, initialCode } from "../utils/util.js";
 export class CodeWriter {
     constructor(outputFilePath) {
         _CodeWriter_instances.add(this);
-        this.fileDescriptor = fs.openSync(outputFilePath, "w");
-        this.path = outputFilePath;
+        this.outputDir = outputFilePath;
+        this.path = "";
         this.name = "";
         this.compCounter = 0;
-        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_initializeStack).call(this);
+        this.fileDescriptor = undefined;
     }
     setFileName(fileName) {
         this.name = fileName;
+        const dir = this.outputDir + "/" + fileName + ".asm";
+        this.path = dir;
+        this.fileDescriptor = fs.openSync(dir, "w");
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_initializeStack).call(this, dir);
     }
     writeArithmetic(command) {
         let operation = "";
@@ -41,11 +45,12 @@ export class CodeWriter {
     }
     close() {
         fs.appendFileSync(this.path, "(END)\n@END\n0;JMP");
-        fs.close(this.fileDescriptor);
+        if (this.fileDescriptor)
+            fs.close(this.fileDescriptor);
     }
 }
-_CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _CodeWriter_initializeStack() {
-    fs.writeFileSync(this.path, initialCode);
+_CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _CodeWriter_initializeStack(path) {
+    fs.writeFileSync(path, initialCode);
 }, _CodeWriter_unaryOperation = function _CodeWriter_unaryOperation(op) {
     return (popFromTop + `M=${ARITHMETIC_COMMANDS[op]}M\n` + incrementSP);
 }, _CodeWriter_binaryOperation = function _CodeWriter_binaryOperation(op) {
