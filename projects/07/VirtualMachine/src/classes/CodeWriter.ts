@@ -1,16 +1,18 @@
 import * as fs from "fs";
-import { AC, ARITHMETIC_COMMANDS } from "../types/types";
-import { incrementSP, popFromTop, initialCode } from "../utils/util";
+import { AC, ARITHMETIC_COMMANDS } from "../types/types.js";
+import { incrementSP, popFromTop, initialCode } from "../utils/util.js";
 
 export class CodeWriter {
   fileDescriptor: number;
   name: string;
   path: string;
+  compCounter: number;
 
   constructor(outputFilePath: string) {
     this.fileDescriptor = fs.openSync(outputFilePath, "w");
     this.path = outputFilePath;
     this.name = "";
+    this.compCounter = 0;
     this.#initializeStack();
   }
 
@@ -24,19 +26,14 @@ export class CodeWriter {
       operation = this.#binaryOperation(command);
     } else if (["neg", "not"].includes(command)) {
       operation = this.#unaryOperation(command);
-    } else {
+    } else if (["eq", "gt", "lt"]) {
       operation = this.#compareOperation(command);
+      this.compCounter++;
     }
     fs.appendFileSync(this.path, operation);
   }
 
   writePushPop(command: string, segment: string, index?: number) {
-    console.log("hi");
-
-    // the push command is then implemented by storing x at the array entry pointed by sp and then
-    // incrementing sp (i.e., stack[sp]=x; sp=sp+1). The pop operation is implemented
-    // by first decrementing sp and then returning the value stored in the top position (i.e.,
-    // sp=sp-1; return stack[sp]).
     if (index) {
       const result = this.#push(index);
       fs.appendFileSync(this.path, result);
@@ -74,14 +71,14 @@ export class CodeWriter {
       `D=M\n` + // D = Memory[Memory[SP]]
       popFromTop + // D is set to value of top of stack, a is set to address of next down
       `D=M-D\n` + // minus the 2nd from top of stack from top of stack
-      `@TRUE\n` + // set a to @TRUE
+      `@TRUE.${this.compCounter}\n` + // set a to @TRUE
       `D;J${op.toUpperCase()}\n` + // if D < = > 0 jump to true
       `D=0\n` + // set D to false if we haven't jumped
-      `@FINALLY\n` + // set a to finally
+      `@FINALLY.${this.compCounter}\n` + // set a to finally
       `0;JMP\n` + // conditionally jump to finally
-      `(TRUE)\n` +
+      `(TRUE.${this.compCounter})\n` +
       `D=-1\n` + // set D to true which is apparently -1
-      `(FINALLY)\n` +
+      `(FINALLY.${this.compCounter})\n` +
       `@SP\n` +
       `A=M\n` +
       `M=D\n` +

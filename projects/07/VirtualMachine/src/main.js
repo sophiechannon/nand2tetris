@@ -1,17 +1,12 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.translate = void 0;
-const path_1 = __importDefault(require("path"));
-const Parser_1 = require("./classes/Parser");
-const CodeWriter_1 = require("./classes/CodeWriter");
-const translate = (path) => {
+import process from "process";
+import Path from "path";
+import { Parser } from "./classes/Parser.js";
+import { CodeWriter } from "./classes/CodeWriter.js";
+export const translate = (path) => {
     const outputFilePath = path.split(".vm")[0] + ".asm";
-    const c = new CodeWriter_1.CodeWriter(outputFilePath);
-    const p = new Parser_1.Parser(path);
-    c.setFileName(path_1.default.parse(path).name);
+    const c = new CodeWriter(outputFilePath);
+    const p = new Parser(path);
+    c.setFileName(Path.parse(path).name);
     while (p.hasMoreCommands()) {
         p.advance();
         if (p.commandType() === "C_ARITHMETIC") {
@@ -23,5 +18,5 @@ const translate = (path) => {
     }
     c.close();
 };
-exports.translate = translate;
+translate(process.argv[2]);
 //# sourceMappingURL=main.js.map

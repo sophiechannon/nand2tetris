@@ -1,7 +1,7 @@
 import process from "process";
 import Path from "path";
-import { Parser } from "./classes/Parser";
-import { CodeWriter } from "./classes/CodeWriter";
+import { Parser } from "./classes/Parser.js";
+import { CodeWriter } from "./classes/CodeWriter.js";
 
 export const translate = (path: string) => {
   // if arg is a directory, should parse all files in directory
@@ -20,4 +20,4 @@ export const translate = (path: string) => {
   c.close();
 };
 
-// translate(process.argv[2]);
+translate(process.argv[2]);

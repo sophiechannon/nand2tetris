@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ARITHMETIC_COMMANDS = exports.SEGMENT_MAP = exports.COMMAND_TYPE_MAP = void 0;
-exports.COMMAND_TYPE_MAP = {
+export const COMMAND_TYPE_MAP = {
     add: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
     sub: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
     neg: { type: "C_ARITHMETIC", arg1: "self", arg2: false },
@@ -20,14 +17,14 @@ exports.COMMAND_TYPE_MAP = {
     return: { type: "C_RETURN", arg1: false, arg2: false },
     call: { type: "C_CALL", arg1: true, arg2: true },
 };
-exports.SEGMENT_MAP = {
+export const SEGMENT_MAP = {
     argument: "ARG",
     local: "LCL",
     this: "THIS",
     that: "THAT",
     pointer: "SP",
 };
-exports.ARITHMETIC_COMMANDS = {
+export const ARITHMETIC_COMMANDS = {
     add: "+",
     sub: "-",
     and: "&",
