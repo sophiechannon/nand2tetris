@@ -54,8 +54,6 @@ export class CodeWriter {
     if (command === "C_PUSH") {
       result = this.#push(segment, index);
     } else {
-      console.log("poppin");
-
       result = this.#pop(segment, index);
     }
     fs.appendFileSync(this.path, result);
@@ -114,13 +112,14 @@ export class CodeWriter {
       return (
         `@${index}\n` +
         `D=A\n` +
-        // set D to the constant index e.g. 4
         `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
-        `A=M\n` +
-        // set A to value of local
-        `D=D+A\n` +
-        // set D to what is saved there
+        `A=M+D\n` +
+        `D=M\n` +
         pushToStack
+      );
+    } else if (segment === "temp") {
+      return (
+        `@${index}\n` + `D=A\n` + `@5\n` + `A=D+A\n` + `D=M\n` + pushToStack
       );
     }
     return "";
@@ -129,21 +128,18 @@ export class CodeWriter {
   #pop(segment: string, index: number) {
     if (segment === "constant") {
       return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
-    } else if (["local", "argument", "this", "that"].includes(segment)) {
-      console.log(segment, "segment");
+    } else if (
+      ["local", "argument", "this", "that", "temp"].includes(segment)
+    ) {
       return (
         `@${index}\n` +
         `D=A\n` +
-        // set D to the constant index e.g. 4
         `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
-        `A=M\n` +
-        // e.g. Local / 50 + 4
+        (segment === "temp" ? "" : `A=M\n`) +
         `D=D+A\n` +
-        // set D to what is saved there
         `@R13\n` +
         `M=D\n` +
         popFromTop +
-        // `@SP\n` + `M=M-1\n` + `A=M\n`
         `D=M\n` +
         `@R13\n` +
         `A=M\n` +
@@ -153,7 +149,3 @@ export class CodeWriter {
     return "";
   }
 }
-
-// The pop operation is implemented
-// by first decrementing sp and then returning the value stored in the top position (i.e.,
-// sp=sp-1; return stack[sp]).

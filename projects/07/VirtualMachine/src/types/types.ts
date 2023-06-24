@@ -27,7 +27,8 @@ export const SEGMENT_MAP = {
   local: "LCL",
   this: "THIS",
   that: "THAT",
-  pointer: "SP",
+  temp: "5",
+  pointer: "3",
 };
 
 export type AC = typeof ARITHMETIC_COMMANDS;

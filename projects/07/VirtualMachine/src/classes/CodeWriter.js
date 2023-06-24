@@ -45,7 +45,6 @@ export class CodeWriter {
             result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_push).call(this, segment, index);
         }
         else {
-            console.log("poppin");
             result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_pop).call(this, segment, index);
         }
         fs.appendFileSync(this.path, result);
@@ -91,21 +90,23 @@ _CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _C
         return (`@${index}\n` +
             `D=A\n` +
             `@${SEGMENT_MAP[segment]}\n` +
-            `A=M\n` +
-            `D=D+A\n` +
+            `A=M+D\n` +
+            `D=M\n` +
             pushToStack);
+    }
+    else if (segment === "temp") {
+        return (`@${index}\n` + `D=A\n` + `@5\n` + `A=D+A\n` + `D=M\n` + pushToStack);
     }
     return "";
 }, _CodeWriter_pop = function _CodeWriter_pop(segment, index) {
     if (segment === "constant") {
         return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
     }
-    else if (["local", "argument", "this", "that"].includes(segment)) {
-        console.log(segment, "segment");
+    else if (["local", "argument", "this", "that", "temp"].includes(segment)) {
         return (`@${index}\n` +
             `D=A\n` +
             `@${SEGMENT_MAP[segment]}\n` +
-            `A=M\n` +
+            (segment === "temp" ? "" : `A=M\n`) +
             `D=D+A\n` +
             `@R13\n` +
             `M=D\n` +
