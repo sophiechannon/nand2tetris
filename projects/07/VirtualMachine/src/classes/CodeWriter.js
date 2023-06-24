@@ -3,10 +3,10 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _CodeWriter_instances, _CodeWriter_initializeStack, _CodeWriter_unaryOperation, _CodeWriter_binaryOperation, _CodeWriter_compareOperation, _CodeWriter_push;
+var _CodeWriter_instances, _CodeWriter_initializeStack, _CodeWriter_unaryOperation, _CodeWriter_binaryOperation, _CodeWriter_compareOperation, _CodeWriter_push, _CodeWriter_pop;
 import * as fs from "fs";
-import { ARITHMETIC_COMMANDS } from "../types/types.js";
-import { incrementSP, popFromTop, initialCode } from "../utils/util.js";
+import { ARITHMETIC_COMMANDS, SEGMENT_MAP, } from "../types/types.js";
+import { incrementSP, popFromTop, initialCode, pushToStack, } from "../utils/util.js";
 export class CodeWriter {
     constructor(outputFilePath) {
         _CodeWriter_instances.add(this);
@@ -38,13 +38,20 @@ export class CodeWriter {
         fs.appendFileSync(this.path, operation);
     }
     writePushPop(command, segment, index) {
-        if (index) {
-            const result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_push).call(this, index);
-            fs.appendFileSync(this.path, result);
+        if (index === undefined)
+            return;
+        let result = "";
+        if (command === "C_PUSH") {
+            result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_push).call(this, segment, index);
         }
+        else {
+            console.log("poppin");
+            result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_pop).call(this, segment, index);
+        }
+        fs.appendFileSync(this.path, result);
     }
     close() {
-        fs.appendFileSync(this.path, "(END)\n@END\n0;JMP");
+        fs.appendFileSync(this.path, `(END)\n` + `@END\n` + `0;JMP`);
         if (this.fileDescriptor)
             fs.close(this.fileDescriptor);
     }
@@ -76,12 +83,38 @@ _CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _C
         `A=M\n` +
         `M=D\n` +
         incrementSP);
-}, _CodeWriter_push = function _CodeWriter_push(index) {
-    return (`@${index}\n` +
-        `D=A\n` +
-        `@SP\n` +
-        `A=M\n` +
-        `M=D\n` +
-        incrementSP);
+}, _CodeWriter_push = function _CodeWriter_push(segment, index) {
+    if (segment === "constant") {
+        return `@${index}\n` + `D=A\n` + pushToStack;
+    }
+    else if (["local", "argument", "this", "that"].includes(segment)) {
+        return (`@${index}\n` +
+            `D=A\n` +
+            `@${SEGMENT_MAP[segment]}\n` +
+            `A=M\n` +
+            `D=D+A\n` +
+            pushToStack);
+    }
+    return "";
+}, _CodeWriter_pop = function _CodeWriter_pop(segment, index) {
+    if (segment === "constant") {
+        return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
+    }
+    else if (["local", "argument", "this", "that"].includes(segment)) {
+        console.log(segment, "segment");
+        return (`@${index}\n` +
+            `D=A\n` +
+            `@${SEGMENT_MAP[segment]}\n` +
+            `A=M\n` +
+            `D=D+A\n` +
+            `@R13\n` +
+            `M=D\n` +
+            popFromTop +
+            `D=M\n` +
+            `@R13\n` +
+            `A=M\n` +
+            `M=D\n`);
+    }
+    return "";
 };
 //# sourceMappingURL=CodeWriter.js.map

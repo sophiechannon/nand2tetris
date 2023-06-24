@@ -4,14 +4,13 @@ import * as fs from "fs";
 export const getCommandOrArg = (line: string, index: number) =>
   line?.split(" ")[index]?.trim();
 
-export const incrementSP = `@SP\n` + `M=M+1\n`; // // Memory[SP] = Memory[SP] + 1
+export const incrementSP = `@SP\n` + `M=M+1\n`;
 
-export const popFromTop =
-  `@SP\n` + // set A register value of SP
-  `M=M-1\n` + // Memory[SP] = Memory[SP] - 1
-  `A=M\n`; // A = Memory[SP]
+export const popFromTop = `@SP\n` + `M=M-1\n` + `A=M\n`;
 
-export const initialCode = `@256\nD=A\n@SP\nM=D\n`;
+export const pushToStack = `@SP\n` + `A=M\n` + `M=D\n` + incrementSP;
+
+export const initialCode = `@256\n` + `D=A\n` + `@SP\n` + `M=D\n`;
 
 export const isVMFile = (file: string) => Path.parse(file).ext === ".vm";
 

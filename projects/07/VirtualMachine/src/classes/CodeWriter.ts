@@ -1,6 +1,16 @@
 import * as fs from "fs";
-import { AC, ARITHMETIC_COMMANDS } from "../types/types.js";
-import { incrementSP, popFromTop, initialCode } from "../utils/util.js";
+import {
+  AC,
+  ARITHMETIC_COMMANDS,
+  SEGMENT_MAP,
+  Segment,
+} from "../types/types.js";
+import {
+  incrementSP,
+  popFromTop,
+  initialCode,
+  pushToStack,
+} from "../utils/util.js";
 
 export class CodeWriter {
   name: string;
@@ -39,14 +49,20 @@ export class CodeWriter {
   }
 
   writePushPop(command: string, segment: string, index?: number) {
-    if (index) {
-      const result = this.#push(index);
-      fs.appendFileSync(this.path, result);
+    if (index === undefined) return;
+    let result = "";
+    if (command === "C_PUSH") {
+      result = this.#push(segment, index);
+    } else {
+      console.log("poppin");
+
+      result = this.#pop(segment, index);
     }
+    fs.appendFileSync(this.path, result);
   }
 
   close() {
-    fs.appendFileSync(this.path, "(END)\n@END\n0;JMP");
+    fs.appendFileSync(this.path, `(END)\n` + `@END\n` + `0;JMP`);
     if (this.fileDescriptor) fs.close(this.fileDescriptor);
   }
 
@@ -63,9 +79,9 @@ export class CodeWriter {
   #binaryOperation(op: string) {
     return (
       popFromTop +
-      `D=M\n` + // D = Memory[Memory[SP]]
+      `D=M\n` +
       popFromTop +
-      `M=M${ARITHMETIC_COMMANDS[op as keyof AC]}D\n` + // Memory[Memory[SP]] = Memory[Memory[SP]] +-&| D
+      `M=M${ARITHMETIC_COMMANDS[op as keyof AC]}D\n` +
       incrementSP
     );
   }
@@ -73,16 +89,16 @@ export class CodeWriter {
   #compareOperation(op: string) {
     return (
       popFromTop +
-      `D=M\n` + // D = Memory[Memory[SP]]
-      popFromTop + // D is set to value of top of stack, a is set to address of next down
-      `D=M-D\n` + // minus the 2nd from top of stack from top of stack
-      `@TRUE.${this.compCounter}\n` + // set a to @TRUE
-      `D;J${op.toUpperCase()}\n` + // if D < = > 0 jump to true
-      `D=0\n` + // set D to false if we haven't jumped
-      `@FINALLY.${this.compCounter}\n` + // set a to finally
-      `0;JMP\n` + // conditionally jump to finally
+      `D=M\n` +
+      popFromTop +
+      `D=M-D\n` +
+      `@TRUE.${this.compCounter}\n` +
+      `D;J${op.toUpperCase()}\n` +
+      `D=0\n` +
+      `@FINALLY.${this.compCounter}\n` +
+      `0;JMP\n` +
       `(TRUE.${this.compCounter})\n` +
-      `D=-1\n` + // set D to true which is apparently -1
+      `D=-1\n` +
       `(FINALLY.${this.compCounter})\n` +
       `@SP\n` +
       `A=M\n` +
@@ -91,15 +107,53 @@ export class CodeWriter {
     );
   }
 
-  #push(index: number) {
-    // just constant x atm
-    return (
-      `@${index}\n` +
-      `D=A\n` + // set D to the constant value
-      `@SP\n` + // set SP to that value
-      `A=M\n` +
-      `M=D\n` +
-      incrementSP
-    );
+  #push(segment: string, index: number) {
+    if (segment === "constant") {
+      return `@${index}\n` + `D=A\n` + pushToStack;
+    } else if (["local", "argument", "this", "that"].includes(segment)) {
+      return (
+        `@${index}\n` +
+        `D=A\n` +
+        // set D to the constant index e.g. 4
+        `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
+        `A=M\n` +
+        // set A to value of local
+        `D=D+A\n` +
+        // set D to what is saved there
+        pushToStack
+      );
+    }
+    return "";
+  }
+
+  #pop(segment: string, index: number) {
+    if (segment === "constant") {
+      return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
+    } else if (["local", "argument", "this", "that"].includes(segment)) {
+      console.log(segment, "segment");
+      return (
+        `@${index}\n` +
+        `D=A\n` +
+        // set D to the constant index e.g. 4
+        `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
+        `A=M\n` +
+        // e.g. Local / 50 + 4
+        `D=D+A\n` +
+        // set D to what is saved there
+        `@R13\n` +
+        `M=D\n` +
+        popFromTop +
+        // `@SP\n` + `M=M-1\n` + `A=M\n`
+        `D=M\n` +
+        `@R13\n` +
+        `A=M\n` +
+        `M=D\n`
+      );
+    }
+    return "";
   }
 }
+
+// The pop operation is implemented
+// by first decrementing sp and then returning the value stored in the top position (i.e.,
+// sp=sp-1; return stack[sp]).

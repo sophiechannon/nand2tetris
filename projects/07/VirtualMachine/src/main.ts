@@ -15,8 +15,10 @@ export const main = (path: string) => {
     while (p.hasMoreCommands()) {
       p.advance();
       if (p.commandType() === "C_ARITHMETIC") {
+        console.log("arith", p.arg1());
         c.writeArithmetic(p.arg1());
       } else if (p.commandType() === "C_PUSH" || p.commandType() === "C_POP") {
+        console.log(p.commandType(), p.arg1(), p.arg2());
         c.writePushPop(p.commandType(), p.arg1(), p.arg2());
       }
     }

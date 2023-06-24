@@ -20,6 +20,8 @@ export const COMMAND_TYPE_MAP = {
   call: { type: "C_CALL", arg1: true, arg2: true },
 };
 
+export type Segment = typeof SEGMENT_MAP;
+
 export const SEGMENT_MAP = {
   argument: "ARG",
   local: "LCL",
