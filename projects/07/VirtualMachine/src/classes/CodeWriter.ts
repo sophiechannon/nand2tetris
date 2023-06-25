@@ -106,12 +106,18 @@ export class CodeWriter {
     if (segment === "constant") {
       return `@${index}\n` + `D=A\n` + pushToStack;
     }
+    if (segment === "static") {
+      return `@${this.name}.${index}\n` + `D=M\n` + pushToStack;
+    }
     return pushR1R12(segment, index);
   }
 
   #pop(segment: string, index: number) {
     if (segment === "constant") {
       return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
+    }
+    if (segment === "static") {
+      return popFromTop + `D=M\n` + `@${this.name}.${index}\n` + `M=D\n`;
     }
     return popR1R12(segment, index);
   }

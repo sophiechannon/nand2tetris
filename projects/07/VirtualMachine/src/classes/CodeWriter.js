@@ -86,10 +86,16 @@ _CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _C
     if (segment === "constant") {
         return `@${index}\n` + `D=A\n` + pushToStack;
     }
+    if (segment === "static") {
+        return `@${this.name}.${index}\n` + `D=M\n` + pushToStack;
+    }
     return pushR1R12(segment, index);
 }, _CodeWriter_pop = function _CodeWriter_pop(segment, index) {
     if (segment === "constant") {
         return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
+    }
+    if (segment === "static") {
+        return popFromTop + `D=M\n` + `@${this.name}.${index}\n` + `M=D\n`;
     }
     return popR1R12(segment, index);
 };
