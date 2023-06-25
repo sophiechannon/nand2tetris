@@ -94,19 +94,24 @@ _CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _C
             `D=M\n` +
             pushToStack);
     }
-    else if (segment === "temp") {
-        return (`@${index}\n` + `D=A\n` + `@5\n` + `A=D+A\n` + `D=M\n` + pushToStack);
+    else if (["temp", "pointer"].includes(segment)) {
+        return (`@${index}\n` +
+            `D=A\n` +
+            `@${SEGMENT_MAP[segment]}\n` +
+            `A=D+A\n` +
+            `D=M\n` +
+            pushToStack);
     }
     return "";
 }, _CodeWriter_pop = function _CodeWriter_pop(segment, index) {
     if (segment === "constant") {
         return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
     }
-    else if (["local", "argument", "this", "that", "temp"].includes(segment)) {
+    else if (["local", "argument", "this", "that", "temp", "pointer"].includes(segment)) {
         return (`@${index}\n` +
             `D=A\n` +
             `@${SEGMENT_MAP[segment]}\n` +
-            (segment === "temp" ? "" : `A=M\n`) +
+            (segment === "temp" || segment === "pointer" ? "" : `A=M\n`) +
             `D=D+A\n` +
             `@R13\n` +
             `M=D\n` +

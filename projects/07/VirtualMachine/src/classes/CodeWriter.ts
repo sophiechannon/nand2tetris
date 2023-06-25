@@ -117,9 +117,14 @@ export class CodeWriter {
         `D=M\n` +
         pushToStack
       );
-    } else if (segment === "temp") {
+    } else if (["temp", "pointer"].includes(segment)) {
       return (
-        `@${index}\n` + `D=A\n` + `@5\n` + `A=D+A\n` + `D=M\n` + pushToStack
+        `@${index}\n` +
+        `D=A\n` +
+        `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
+        `A=D+A\n` +
+        `D=M\n` +
+        pushToStack
       );
     }
     return "";
@@ -129,13 +134,13 @@ export class CodeWriter {
     if (segment === "constant") {
       return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
     } else if (
-      ["local", "argument", "this", "that", "temp"].includes(segment)
+      ["local", "argument", "this", "that", "temp", "pointer"].includes(segment)
     ) {
       return (
         `@${index}\n` +
         `D=A\n` +
         `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
-        (segment === "temp" ? "" : `A=M\n`) +
+        (segment === "temp" || segment === "pointer" ? "" : `A=M\n`) +
         `D=D+A\n` +
         `@R13\n` +
         `M=D\n` +
