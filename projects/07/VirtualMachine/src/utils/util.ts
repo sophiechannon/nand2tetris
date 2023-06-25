@@ -15,8 +15,10 @@ export const initialCode = `@256\n` + `D=A\n` + `@SP\n` + `M=D\n`;
 
 export const isVMFile = (file: string) => Path.parse(file).ext === ".vm";
 
-export const getDirectory = (path: string) =>
-  Path.parse(path).ext ? Path.parse(path).dir : path;
+export const getDirectory = (path: string) => {
+  const newPath = Path.parse(path).ext ? Path.parse(path).dir : path;
+  return newPath.endsWith("/") ? newPath : newPath + "/";
+};
 
 export const getVMFiles = (path: string) =>
   fs

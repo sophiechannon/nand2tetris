@@ -19,8 +19,8 @@ export const main = (path) => {
                 c.writePushPop(p.commandType(), p.arg1(), p.arg2());
             }
         }
-        c.close();
     }
+    c.close();
 };
 main(process.argv[2]);
 //# sourceMappingURL=main.js.map

@@ -20,8 +20,8 @@ export const main = (path: string) => {
         c.writePushPop(p.commandType(), p.arg1(), p.arg2());
       }
     }
-    c.close();
   }
+  c.close();
 };
 
 main(process.argv[2]);

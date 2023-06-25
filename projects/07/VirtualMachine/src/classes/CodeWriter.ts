@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import Path from "path";
 import { AC, ARITHMETIC_COMMANDS } from "../types/types.js";
 import {
   incrementSP,
@@ -12,24 +13,22 @@ import {
 export class CodeWriter {
   name: string;
   outputDir: string;
-  path: string;
+  outputFile: string;
   compCounter: number;
   fileDescriptor?: number;
 
   constructor(outputFilePath: string) {
     this.outputDir = outputFilePath;
-    this.path = "";
+    this.outputFile = this.outputDir + Path.parse(this.outputDir).name + ".asm";
+    console.log(this.outputFile);
     this.name = "";
     this.compCounter = 0;
-    this.fileDescriptor = undefined;
+    this.fileDescriptor = fs.openSync(this.outputFile, "w");
+    this.writeInit();
   }
 
   setFileName(fileName: string) {
     this.name = fileName;
-    const dir = this.outputDir + "/" + fileName + ".asm";
-    this.path = dir;
-    this.fileDescriptor = fs.openSync(dir, "w");
-    this.#initializeStack(dir);
   }
 
   writeArithmetic(command: string) {
@@ -42,7 +41,7 @@ export class CodeWriter {
       operation = this.#compareOperation(command);
       this.compCounter++;
     }
-    fs.appendFileSync(this.path, operation);
+    fs.appendFileSync(this.outputFile, operation);
   }
 
   writePushPop(command: string, segment: string, index?: number) {
@@ -53,16 +52,16 @@ export class CodeWriter {
     } else {
       result = this.#pop(segment, index);
     }
-    fs.appendFileSync(this.path, result);
+    fs.appendFileSync(this.outputFile, result);
   }
 
   close() {
-    fs.appendFileSync(this.path, `(END)\n` + `@END\n` + `0;JMP`);
+    fs.appendFileSync(this.outputFile, `(END)\n` + `@END\n` + `0;JMP`);
     if (this.fileDescriptor) fs.close(this.fileDescriptor);
   }
 
-  #initializeStack(path: string) {
-    fs.writeFileSync(path, initialCode);
+  writeInit() {
+    fs.writeFileSync(this.outputFile, initialCode);
   }
 
   #unaryOperation(op: string) {

@@ -7,7 +7,10 @@ export const popFromTop = `@SP\n` + `M=M-1\n` + `A=M\n`;
 export const pushToStack = `@SP\n` + `A=M\n` + `M=D\n` + incrementSP;
 export const initialCode = `@256\n` + `D=A\n` + `@SP\n` + `M=D\n`;
 export const isVMFile = (file) => Path.parse(file).ext === ".vm";
-export const getDirectory = (path) => Path.parse(path).ext ? Path.parse(path).dir : path;
+export const getDirectory = (path) => {
+    const newPath = Path.parse(path).ext ? Path.parse(path).dir : path;
+    return newPath.endsWith("/") ? newPath : newPath + "/";
+};
 export const getVMFiles = (path) => fs
     .readdirSync(path)
     .filter((file) => isVMFile(file))

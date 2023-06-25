@@ -3,25 +3,24 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _CodeWriter_instances, _CodeWriter_initializeStack, _CodeWriter_unaryOperation, _CodeWriter_binaryOperation, _CodeWriter_compareOperation, _CodeWriter_push, _CodeWriter_pop;
+var _CodeWriter_instances, _CodeWriter_unaryOperation, _CodeWriter_binaryOperation, _CodeWriter_compareOperation, _CodeWriter_push, _CodeWriter_pop;
 import * as fs from "fs";
+import Path from "path";
 import { ARITHMETIC_COMMANDS } from "../types/types.js";
 import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, } from "../utils/util.js";
 export class CodeWriter {
     constructor(outputFilePath) {
         _CodeWriter_instances.add(this);
         this.outputDir = outputFilePath;
-        this.path = "";
+        this.outputFile = this.outputDir + Path.parse(this.outputDir).name + ".asm";
+        console.log(this.outputFile);
         this.name = "";
         this.compCounter = 0;
-        this.fileDescriptor = undefined;
+        this.fileDescriptor = fs.openSync(this.outputFile, "w");
+        this.writeInit();
     }
     setFileName(fileName) {
         this.name = fileName;
-        const dir = this.outputDir + "/" + fileName + ".asm";
-        this.path = dir;
-        this.fileDescriptor = fs.openSync(dir, "w");
-        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_initializeStack).call(this, dir);
     }
     writeArithmetic(command) {
         let operation = "";
@@ -35,7 +34,7 @@ export class CodeWriter {
             operation = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_compareOperation).call(this, command);
             this.compCounter++;
         }
-        fs.appendFileSync(this.path, operation);
+        fs.appendFileSync(this.outputFile, operation);
     }
     writePushPop(command, segment, index) {
         if (index === undefined)
@@ -47,17 +46,18 @@ export class CodeWriter {
         else {
             result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_pop).call(this, segment, index);
         }
-        fs.appendFileSync(this.path, result);
+        fs.appendFileSync(this.outputFile, result);
     }
     close() {
-        fs.appendFileSync(this.path, `(END)\n` + `@END\n` + `0;JMP`);
+        fs.appendFileSync(this.outputFile, `(END)\n` + `@END\n` + `0;JMP`);
         if (this.fileDescriptor)
             fs.close(this.fileDescriptor);
     }
+    writeInit() {
+        fs.writeFileSync(this.outputFile, initialCode);
+    }
 }
-_CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _CodeWriter_initializeStack(path) {
-    fs.writeFileSync(path, initialCode);
-}, _CodeWriter_unaryOperation = function _CodeWriter_unaryOperation(op) {
+_CodeWriter_instances = new WeakSet(), _CodeWriter_unaryOperation = function _CodeWriter_unaryOperation(op) {
     return (popFromTop + `M=${ARITHMETIC_COMMANDS[op]}M\n` + incrementSP);
 }, _CodeWriter_binaryOperation = function _CodeWriter_binaryOperation(op) {
     return (popFromTop +
