@@ -1,15 +1,12 @@
 import * as fs from "fs";
-import {
-  AC,
-  ARITHMETIC_COMMANDS,
-  SEGMENT_MAP,
-  Segment,
-} from "../types/types.js";
+import { AC, ARITHMETIC_COMMANDS } from "../types/types.js";
 import {
   incrementSP,
   popFromTop,
   initialCode,
   pushToStack,
+  popR1R12,
+  pushR1R12,
 } from "../utils/util.js";
 
 export class CodeWriter {
@@ -108,49 +105,14 @@ export class CodeWriter {
   #push(segment: string, index: number) {
     if (segment === "constant") {
       return `@${index}\n` + `D=A\n` + pushToStack;
-    } else if (["local", "argument", "this", "that"].includes(segment)) {
-      return (
-        `@${index}\n` +
-        `D=A\n` +
-        `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
-        `A=M+D\n` +
-        `D=M\n` +
-        pushToStack
-      );
-    } else if (["temp", "pointer"].includes(segment)) {
-      return (
-        `@${index}\n` +
-        `D=A\n` +
-        `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
-        `A=D+A\n` +
-        `D=M\n` +
-        pushToStack
-      );
     }
-    return "";
+    return pushR1R12(segment, index);
   }
 
   #pop(segment: string, index: number) {
     if (segment === "constant") {
       return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
-    } else if (
-      ["local", "argument", "this", "that", "temp", "pointer"].includes(segment)
-    ) {
-      return (
-        `@${index}\n` +
-        `D=A\n` +
-        `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
-        (segment === "temp" || segment === "pointer" ? "" : `A=M\n`) +
-        `D=D+A\n` +
-        `@R13\n` +
-        `M=D\n` +
-        popFromTop +
-        `D=M\n` +
-        `@R13\n` +
-        `A=M\n` +
-        `M=D\n`
-      );
     }
-    return "";
+    return popR1R12(segment, index);
   }
 }

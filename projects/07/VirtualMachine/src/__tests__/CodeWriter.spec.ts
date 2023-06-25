@@ -4,6 +4,7 @@ import {
   incrementSP,
   initialCode,
   popFromTop,
+  pushR1R12,
   pushToStack,
 } from "../utils/util";
 const testPath = "./src/__tests__";
@@ -161,10 +162,10 @@ describe(CodeWriter, () => {
     c.writePushPop("C_PUSH", "local", 1);
     expect(fs.readFileSync(testPath + "/test.asm").toString()).toEqual(
       initialCode +
-        `@LCL\n` +
-        `D=M\n` +
         `@1\n` +
-        `A=A+D\n` +
+        `D=A\n` +
+        `@LCL\n` +
+        `A=M+D\n` +
         `D=M\n` +
         pushToStack
     );
@@ -176,12 +177,17 @@ describe(CodeWriter, () => {
     c.writePushPop("C_POP", "this", 4);
     expect(fs.readFileSync(testPath + "/test.asm").toString()).toEqual(
       initialCode +
-        `@THIS\n` +
-        `D=M\n` +
         `@4\n` +
-        `A=A+D\n` +
-        `D=M\n` +
+        `D=A\n` +
+        `@THIS\n` +
+        `A=M\n` +
+        `D=D+A\n` +
+        `@R13\n` +
+        `M=D\n` +
         popFromTop +
+        `D=M\n` +
+        `@R13\n` +
+        `A=M\n` +
         `M=D\n`
     );
     c.close();

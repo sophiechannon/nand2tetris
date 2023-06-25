@@ -1,5 +1,6 @@
 import Path from "path";
 import * as fs from "fs";
+import { SEGMENT_MAP, Segment } from "../types/types.js";
 
 export const getCommandOrArg = (line: string, index: number) =>
   line?.split(" ")[index]?.trim();
@@ -22,3 +23,28 @@ export const getVMFiles = (path: string) =>
     .readdirSync(path)
     .filter((file) => isVMFile(file))
     .map((file) => path + "/" + file);
+
+const isTempOrPointer = (segment: string) =>
+  ["temp", "pointer"].includes(segment);
+
+export const popR1R12 = (segment: string, index: number) =>
+  `@${index}\n` +
+  `D=A\n` +
+  `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
+  (isTempOrPointer(segment) ? `` : `A=M\n`) +
+  `D=D+A\n` +
+  `@R13\n` +
+  `M=D\n` +
+  popFromTop +
+  `D=M\n` +
+  `@R13\n` +
+  `A=M\n` +
+  `M=D\n`;
+
+export const pushR1R12 = (segment: string, index: number) =>
+  `@${index}\n` +
+  `D=A\n` +
+  `@${SEGMENT_MAP[segment as keyof Segment]}\n` +
+  (isTempOrPointer(segment) ? `A=D+A\n` : `A=M+D\n`) +
+  `D=M\n` +
+  pushToStack;

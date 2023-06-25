@@ -5,8 +5,8 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 };
 var _CodeWriter_instances, _CodeWriter_initializeStack, _CodeWriter_unaryOperation, _CodeWriter_binaryOperation, _CodeWriter_compareOperation, _CodeWriter_push, _CodeWriter_pop;
 import * as fs from "fs";
-import { ARITHMETIC_COMMANDS, SEGMENT_MAP, } from "../types/types.js";
-import { incrementSP, popFromTop, initialCode, pushToStack, } from "../utils/util.js";
+import { ARITHMETIC_COMMANDS } from "../types/types.js";
+import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, } from "../utils/util.js";
 export class CodeWriter {
     constructor(outputFilePath) {
         _CodeWriter_instances.add(this);
@@ -86,41 +86,11 @@ _CodeWriter_instances = new WeakSet(), _CodeWriter_initializeStack = function _C
     if (segment === "constant") {
         return `@${index}\n` + `D=A\n` + pushToStack;
     }
-    else if (["local", "argument", "this", "that"].includes(segment)) {
-        return (`@${index}\n` +
-            `D=A\n` +
-            `@${SEGMENT_MAP[segment]}\n` +
-            `A=M+D\n` +
-            `D=M\n` +
-            pushToStack);
-    }
-    else if (["temp", "pointer"].includes(segment)) {
-        return (`@${index}\n` +
-            `D=A\n` +
-            `@${SEGMENT_MAP[segment]}\n` +
-            `A=D+A\n` +
-            `D=M\n` +
-            pushToStack);
-    }
-    return "";
+    return pushR1R12(segment, index);
 }, _CodeWriter_pop = function _CodeWriter_pop(segment, index) {
     if (segment === "constant") {
         return popFromTop + `D=M\n` + `@${index}\n` + `M=D\n`;
     }
-    else if (["local", "argument", "this", "that", "temp", "pointer"].includes(segment)) {
-        return (`@${index}\n` +
-            `D=A\n` +
-            `@${SEGMENT_MAP[segment]}\n` +
-            (segment === "temp" || segment === "pointer" ? "" : `A=M\n`) +
-            `D=D+A\n` +
-            `@R13\n` +
-            `M=D\n` +
-            popFromTop +
-            `D=M\n` +
-            `@R13\n` +
-            `A=M\n` +
-            `M=D\n`);
-    }
-    return "";
+    return popR1R12(segment, index);
 };
 //# sourceMappingURL=CodeWriter.js.map
