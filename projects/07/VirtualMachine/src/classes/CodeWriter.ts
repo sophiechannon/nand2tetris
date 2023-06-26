@@ -41,7 +41,7 @@ export class CodeWriter {
       operation = this.#compareOperation(command);
       this.compCounter++;
     }
-    fs.appendFileSync(this.outputFile, operation);
+    this.#appendToFile(operation);
   }
 
   writePushPop(command: string, segment: string, index?: number) {
@@ -52,16 +52,28 @@ export class CodeWriter {
     } else {
       result = this.#pop(segment, index);
     }
-    fs.appendFileSync(this.outputFile, result);
-  }
-
-  close() {
-    fs.appendFileSync(this.outputFile, `(END)\n` + `@END\n` + `0;JMP`);
-    if (this.fileDescriptor) fs.close(this.fileDescriptor);
+    this.#appendToFile(result);
   }
 
   writeInit() {
     fs.writeFileSync(this.outputFile, initialCode);
+  }
+
+  writeLabel(label: string) {
+    this.#appendToFile(`(${label})\n`);
+  }
+
+  writeGoTo(label: string) {
+    this.#appendToFile(`@${label}\n` + `0;JMP\n`);
+  }
+
+  writeIf(label: string) {
+    this.#appendToFile(popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
+  }
+
+  close() {
+    this.#appendToFile(`(END)\n` + `@END\n` + `0;JMP`);
+    if (this.fileDescriptor) fs.close(this.fileDescriptor);
   }
 
   #unaryOperation(op: string) {
@@ -119,5 +131,9 @@ export class CodeWriter {
       return popFromTop + `D=M\n` + `@${this.name}.${index}\n` + `M=D\n`;
     }
     return popR1R12(segment, index);
+  }
+
+  #appendToFile(string: string) {
+    fs.appendFileSync(this.outputFile, string);
   }
 }

@@ -3,7 +3,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _CodeWriter_instances, _CodeWriter_unaryOperation, _CodeWriter_binaryOperation, _CodeWriter_compareOperation, _CodeWriter_push, _CodeWriter_pop;
+var _CodeWriter_instances, _CodeWriter_unaryOperation, _CodeWriter_binaryOperation, _CodeWriter_compareOperation, _CodeWriter_push, _CodeWriter_pop, _CodeWriter_appendToFile;
 import * as fs from "fs";
 import Path from "path";
 import { ARITHMETIC_COMMANDS } from "../types/types.js";
@@ -34,7 +34,7 @@ export class CodeWriter {
             operation = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_compareOperation).call(this, command);
             this.compCounter++;
         }
-        fs.appendFileSync(this.outputFile, operation);
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, operation);
     }
     writePushPop(command, segment, index) {
         if (index === undefined)
@@ -46,15 +46,24 @@ export class CodeWriter {
         else {
             result = __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_pop).call(this, segment, index);
         }
-        fs.appendFileSync(this.outputFile, result);
-    }
-    close() {
-        fs.appendFileSync(this.outputFile, `(END)\n` + `@END\n` + `0;JMP`);
-        if (this.fileDescriptor)
-            fs.close(this.fileDescriptor);
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, result);
     }
     writeInit() {
         fs.writeFileSync(this.outputFile, initialCode);
+    }
+    writeLabel(label) {
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `(${label})\n`);
+    }
+    writeGoTo(label) {
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `@${label}\n` + `0;JMP\n`);
+    }
+    writeIf(label) {
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
+    }
+    close() {
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `(END)\n` + `@END\n` + `0;JMP`);
+        if (this.fileDescriptor)
+            fs.close(this.fileDescriptor);
     }
 }
 _CodeWriter_instances = new WeakSet(), _CodeWriter_unaryOperation = function _CodeWriter_unaryOperation(op) {
@@ -98,5 +107,7 @@ _CodeWriter_instances = new WeakSet(), _CodeWriter_unaryOperation = function _Co
         return popFromTop + `D=M\n` + `@${this.name}.${index}\n` + `M=D\n`;
     }
     return popR1R12(segment, index);
+}, _CodeWriter_appendToFile = function _CodeWriter_appendToFile(string) {
+    fs.appendFileSync(this.outputFile, string);
 };
 //# sourceMappingURL=CodeWriter.js.map

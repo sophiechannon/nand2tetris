@@ -18,6 +18,12 @@ export const main = (path: string) => {
         c.writeArithmetic(p.arg1());
       } else if (p.commandType() === "C_PUSH" || p.commandType() === "C_POP") {
         c.writePushPop(p.commandType(), p.arg1(), p.arg2());
+      } else if (p.commandType() === "C_LABEL") {
+        c.writeLabel(p.arg1());
+      } else if (p.commandType() === "C_GOTO") {
+        c.writeGoTo(p.arg1());
+      } else if (p.commandType() === "C_IF") {
+        c.writeIf(p.arg1());
       }
     }
   }
