@@ -60,6 +60,25 @@ export class CodeWriter {
     writeIf(label) {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
     }
+    writeCall(functionName, numArgs) { }
+    writeReturn() { }
+    writeFunction(functionName, numLocals) {
+        this.writeLabel(functionName);
+        let counter = 0;
+        let commands = "";
+        while (counter < numLocals) {
+            commands =
+                commands +
+                    `@${counter}\n` +
+                    `D=A\n` +
+                    `@LCL\n` +
+                    `A=M+D\n` +
+                    `M=0\n` +
+                    incrementSP;
+            counter++;
+        }
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, commands);
+    }
     close() {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `(END)\n` + `@END\n` + `0;JMP`);
         if (this.fileDescriptor)

@@ -4,6 +4,7 @@ import { Parser } from "./classes/Parser.js";
 import { CodeWriter } from "./classes/CodeWriter.js";
 import { getDirectory, getVMFiles } from "./utils/util.js";
 export const main = (path) => {
+    var _a;
     const outputFilePath = getDirectory(path);
     const directory = getVMFiles(outputFilePath);
     const c = new CodeWriter(outputFilePath);
@@ -26,6 +27,9 @@ export const main = (path) => {
             }
             else if (p.commandType() === "C_IF") {
                 c.writeIf(p.arg1());
+            }
+            else if (p.commandType() === "C_FUNCTION") {
+                c.writeFunction(p.arg1(), (_a = p.arg2()) !== null && _a !== void 0 ? _a : 0);
             }
         }
     }

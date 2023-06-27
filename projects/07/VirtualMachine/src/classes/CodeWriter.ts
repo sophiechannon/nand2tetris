@@ -24,7 +24,7 @@ export class CodeWriter {
     this.name = "";
     this.compCounter = 0;
     this.fileDescriptor = fs.openSync(this.outputFile, "w");
-    this.writeInit();
+    // this.writeInit();
   }
 
   setFileName(fileName: string) {
@@ -69,6 +69,28 @@ export class CodeWriter {
 
   writeIf(label: string) {
     this.#appendToFile(popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
+  }
+
+  writeCall(functionName: string, numArgs: number) {}
+
+  writeReturn() {}
+
+  writeFunction(functionName: string, numLocals: number) {
+    this.writeLabel(functionName);
+    let counter = 0;
+    let commands = "";
+    while (counter < numLocals) {
+      commands =
+        commands +
+        `@${counter}\n` +
+        `D=A\n` +
+        `@LCL\n` +
+        `A=M+D\n` +
+        `M=0\n` +
+        incrementSP;
+      counter++;
+    }
+    this.#appendToFile(commands);
   }
 
   close() {
