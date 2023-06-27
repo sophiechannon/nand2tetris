@@ -40,11 +40,8 @@ export const returnString = `@LCL\n` +
     `D=A\n` +
     `@R13\n` +
     `M=D\n` +
-    `D=D-1\n` +
-    `D=D-1\n` +
-    `D=D-1\n` +
-    `D=D-1\n` +
-    `A=D-1\n` +
+    `@5\n` +
+    `A=D-A\n` +
     `D=M\n` +
     `@R14\n` +
     `M=D\n` +

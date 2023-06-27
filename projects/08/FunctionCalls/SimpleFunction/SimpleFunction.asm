@@ -94,11 +94,8 @@ A=M
 D=A
 @R13
 M=D
-D=D-1
-D=D-1
-D=D-1
-D=D-1
-A=D-1
+@5
+A=D-A
 D=M
 @R14
 M=D

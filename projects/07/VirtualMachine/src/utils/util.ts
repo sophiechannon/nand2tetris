@@ -55,16 +55,13 @@ const resetSegment = (segment: string) =>
   `@13\n` + `M=M-1\n` + `A=M\n` + `D=M\n` + `@${segment}\n` + `M=D\n`;
 
 export const returnString =
-  `@LCL\n` + // save LCL to a temp variable
+  `@LCL\n` +
   `A=M\n` +
   `D=A\n` +
   `@R13\n` +
   `M=D\n` +
-  `D=D-1\n` +
-  `D=D-1\n` +
-  `D=D-1\n` +
-  `D=D-1\n` +
-  `A=D-1\n` +
+  `@5\n` +
+  `A=D-A\n` +
   `D=M\n` +
   `@R14\n` +
   `M=D\n` +
