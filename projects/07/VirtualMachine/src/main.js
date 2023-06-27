@@ -31,6 +31,9 @@ export const main = (path) => {
             else if (p.commandType() === "C_FUNCTION") {
                 c.writeFunction(p.arg1(), (_a = p.arg2()) !== null && _a !== void 0 ? _a : 0);
             }
+            else if (p.commandType() === "C_RETURN") {
+                c.writeReturn();
+            }
         }
     }
     c.close();

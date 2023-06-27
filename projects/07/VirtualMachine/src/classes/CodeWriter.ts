@@ -8,6 +8,7 @@ import {
   pushToStack,
   popR1R12,
   pushR1R12,
+  returnString,
 } from "../utils/util.js";
 
 export class CodeWriter {
@@ -73,7 +74,9 @@ export class CodeWriter {
 
   writeCall(functionName: string, numArgs: number) {}
 
-  writeReturn() {}
+  writeReturn() {
+    this.#appendToFile(returnString);
+  }
 
   writeFunction(functionName: string, numLocals: number) {
     this.writeLabel(functionName);

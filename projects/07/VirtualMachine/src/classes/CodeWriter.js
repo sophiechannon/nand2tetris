@@ -7,7 +7,7 @@ var _CodeWriter_instances, _CodeWriter_unaryOperation, _CodeWriter_binaryOperati
 import * as fs from "fs";
 import Path from "path";
 import { ARITHMETIC_COMMANDS } from "../types/types.js";
-import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, } from "../utils/util.js";
+import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, returnString, } from "../utils/util.js";
 export class CodeWriter {
     constructor(outputFilePath) {
         _CodeWriter_instances.add(this);
@@ -17,7 +17,6 @@ export class CodeWriter {
         this.name = "";
         this.compCounter = 0;
         this.fileDescriptor = fs.openSync(this.outputFile, "w");
-        this.writeInit();
     }
     setFileName(fileName) {
         this.name = fileName;
@@ -61,7 +60,9 @@ export class CodeWriter {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
     }
     writeCall(functionName, numArgs) { }
-    writeReturn() { }
+    writeReturn() {
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, returnString);
+    }
     writeFunction(functionName, numLocals) {
         this.writeLabel(functionName);
         let counter = 0;

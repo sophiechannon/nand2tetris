@@ -50,3 +50,40 @@ export const pushR1R12 = (segment: string, index: number) =>
   (isTempOrPointer(segment) ? `A=D+A\n` : `A=M+D\n`) +
   `D=M\n` +
   pushToStack;
+
+const resetSegment = (segment: string) =>
+  `@13\n` + `M=M-1\n` + `A=M\n` + `D=M\n` + `@${segment}\n` + `M=D\n`;
+
+export const returnString =
+  `@LCL\n` + // save LCL to a temp variable
+  `A=M\n` +
+  `D=A\n` +
+  `@R13\n` +
+  `M=D\n` +
+  `D=D-1\n` +
+  `D=D-1\n` +
+  `D=D-1\n` +
+  `D=D-1\n` +
+  `A=D-1\n` +
+  `D=M\n` +
+  `@R14\n` +
+  `M=D\n` +
+  `@ARG\n` +
+  `D=M\n` +
+  popFromTop +
+  `D=M\n` +
+  `@ARG\n` +
+  `A=M\n` +
+  `M=D\n` +
+  `@ARG\n` +
+  `A=M + 1\n` +
+  `D=A\n` +
+  `@SP\n` +
+  `M=D\n` +
+  resetSegment("THAT") +
+  resetSegment("THIS") +
+  resetSegment("ARG") +
+  resetSegment("LCL") +
+  `@R14\n` + // not sure about this jump section
+  `A=M\n` +
+  `0;JMP\n`;

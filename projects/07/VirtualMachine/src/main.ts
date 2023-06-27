@@ -26,6 +26,8 @@ export const main = (path: string) => {
         c.writeIf(p.arg1());
       } else if (p.commandType() === "C_FUNCTION") {
         c.writeFunction(p.arg1(), p.arg2() ?? 0);
+      } else if (p.commandType() === "C_RETURN") {
+        c.writeReturn();
       }
     }
   }
