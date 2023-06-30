@@ -13,10 +13,11 @@ export class CodeWriter {
         _CodeWriter_instances.add(this);
         this.outputDir = outputFilePath;
         this.outputFile = this.outputDir + Path.parse(this.outputDir).name + ".asm";
-        console.log(this.outputFile);
         this.name = "";
         this.compCounter = 0;
+        this.funCounter = 0;
         this.fileDescriptor = fs.openSync(this.outputFile, "w");
+        this.writeInit();
     }
     setFileName(fileName) {
         this.name = fileName;
@@ -49,6 +50,7 @@ export class CodeWriter {
     }
     writeInit() {
         fs.writeFileSync(this.outputFile, initialCode);
+        this.writeCall("Sys.init", 0);
     }
     writeLabel(label) {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `(${label})\n`);
@@ -59,7 +61,48 @@ export class CodeWriter {
     writeIf(label) {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
     }
-    writeCall(functionName, numArgs) { }
+    writeCall(functionName, numArgs) {
+        this.funCounter++;
+        const funName = functionName === "Sys.init"
+            ? functionName
+            : `${functionName}$${this.funCounter}`;
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `@RETURN.${funName}\n` +
+            `D=A\n` +
+            pushToStack +
+            `@LCL\n` +
+            `A=M\n` +
+            `D=A\n` +
+            pushToStack +
+            `@ARG\n` +
+            `A=M\n` +
+            `D=A\n` +
+            pushToStack +
+            `@THIS\n` +
+            `A=M\n` +
+            `D=A\n` +
+            pushToStack +
+            `@THAT\n` +
+            `A=M\n` +
+            `D=A\n` +
+            pushToStack +
+            `@${numArgs}\n` +
+            `D=A\n` +
+            `@5\n` +
+            `A=D+A\n` +
+            `D=A\n` +
+            `@SP\n` +
+            `A=M\n` +
+            `D=A-D\n` +
+            `@ARG\n` +
+            `M=D\n` +
+            `@SP\n` +
+            `A=M\n` +
+            `D=A\n` +
+            `@LCL\n` +
+            `M=D\n`);
+        this.writeGoTo(functionName);
+        this.writeLabel(`RETURN.${funName}`);
+    }
     writeReturn() {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, returnString);
     }
@@ -81,7 +124,6 @@ export class CodeWriter {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, commands);
     }
     close() {
-        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `(END)\n` + `@END\n` + `0;JMP`);
         if (this.fileDescriptor)
             fs.close(this.fileDescriptor);
     }

@@ -4,7 +4,7 @@ import { Parser } from "./classes/Parser.js";
 import { CodeWriter } from "./classes/CodeWriter.js";
 import { getDirectory, getVMFiles } from "./utils/util.js";
 export const main = (path) => {
-    var _a;
+    var _a, _b;
     const outputFilePath = getDirectory(path);
     const directory = getVMFiles(outputFilePath);
     const c = new CodeWriter(outputFilePath);
@@ -33,6 +33,9 @@ export const main = (path) => {
             }
             else if (p.commandType() === "C_RETURN") {
                 c.writeReturn();
+            }
+            else if (p.commandType() === "C_CALL") {
+                c.writeCall(p.arg1(), (_b = p.arg2()) !== null && _b !== void 0 ? _b : 0);
             }
         }
     }

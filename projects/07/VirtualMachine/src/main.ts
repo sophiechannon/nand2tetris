@@ -28,6 +28,8 @@ export const main = (path: string) => {
         c.writeFunction(p.arg1(), p.arg2() ?? 0);
       } else if (p.commandType() === "C_RETURN") {
         c.writeReturn();
+      } else if (p.commandType() === "C_CALL") {
+        c.writeCall(p.arg1(), p.arg2() ?? 0);
       }
     }
   }

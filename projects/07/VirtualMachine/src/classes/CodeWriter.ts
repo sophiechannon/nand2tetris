@@ -16,16 +16,17 @@ export class CodeWriter {
   outputDir: string;
   outputFile: string;
   compCounter: number;
+  funCounter: number;
   fileDescriptor?: number;
 
   constructor(outputFilePath: string) {
     this.outputDir = outputFilePath;
     this.outputFile = this.outputDir + Path.parse(this.outputDir).name + ".asm";
-    console.log(this.outputFile);
     this.name = "";
     this.compCounter = 0;
+    this.funCounter = 0;
     this.fileDescriptor = fs.openSync(this.outputFile, "w");
-    // this.writeInit();
+    this.writeInit();
   }
 
   setFileName(fileName: string) {
@@ -58,6 +59,7 @@ export class CodeWriter {
 
   writeInit() {
     fs.writeFileSync(this.outputFile, initialCode);
+    this.writeCall("Sys.init", 0);
   }
 
   writeLabel(label: string) {
@@ -72,7 +74,61 @@ export class CodeWriter {
     this.#appendToFile(popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
   }
 
-  writeCall(functionName: string, numArgs: number) {}
+  writeCall(functionName: string, numArgs: number) {
+    this.funCounter++;
+    const funName =
+      functionName === "Sys.init"
+        ? functionName
+        : `${functionName}$${this.funCounter}`;
+    this.#appendToFile(
+      `@RETURN.${funName}\n` +
+        `D=A\n` +
+        pushToStack +
+        `@LCL\n` +
+        `A=M\n` +
+        `D=A\n` +
+        pushToStack +
+        `@ARG\n` +
+        `A=M\n` +
+        `D=A\n` +
+        pushToStack +
+        `@THIS\n` +
+        `A=M\n` +
+        `D=A\n` +
+        pushToStack +
+        `@THAT\n` +
+        `A=M\n` +
+        `D=A\n` +
+        pushToStack +
+        `@${numArgs}\n` +
+        `D=A\n` +
+        `@5\n` +
+        `A=D+A\n` +
+        `D=A\n` +
+        `@SP\n` +
+        `A=M\n` +
+        `D=A-D\n` +
+        `@ARG\n` +
+        `M=D\n` +
+        `@SP\n` +
+        `A=M\n` +
+        `D=A\n` +
+        `@LCL\n` +
+        `M=D\n`
+    );
+    this.writeGoTo(functionName);
+    this.writeLabel(`RETURN.${funName}`);
+
+    // push return-address // (Using the label declared below)
+    // push LCL // Save LCL of the calling function
+    // push ARG // Save ARG of the calling function
+    // push THIS // Save THIS of the calling function
+    // push THAT // Save THAT of the calling function
+    // ARG = SP-n-5 // Reposition ARG (n ¼ number of args.)
+    // LCL = SP // Reposition LCL
+    // goto f // Transfer control
+    // (return-address) // Declare a label for the return-address
+  }
 
   writeReturn() {
     this.#appendToFile(returnString);
@@ -97,7 +153,6 @@ export class CodeWriter {
   }
 
   close() {
-    this.#appendToFile(`(END)\n` + `@END\n` + `0;JMP`);
     if (this.fileDescriptor) fs.close(this.fileDescriptor);
   }
 
