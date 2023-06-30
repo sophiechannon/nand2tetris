@@ -9,6 +9,7 @@ import {
   popR1R12,
   pushR1R12,
   returnString,
+  getCallString,
 } from "../utils/util.js";
 
 export class CodeWriter {
@@ -80,54 +81,10 @@ export class CodeWriter {
       functionName === "Sys.init"
         ? functionName
         : `${functionName}$${this.funCounter}`;
-    this.#appendToFile(
-      `@RETURN.${funName}\n` +
-        `D=A\n` +
-        pushToStack +
-        `@LCL\n` +
-        `A=M\n` +
-        `D=A\n` +
-        pushToStack +
-        `@ARG\n` +
-        `A=M\n` +
-        `D=A\n` +
-        pushToStack +
-        `@THIS\n` +
-        `A=M\n` +
-        `D=A\n` +
-        pushToStack +
-        `@THAT\n` +
-        `A=M\n` +
-        `D=A\n` +
-        pushToStack +
-        `@${numArgs}\n` +
-        `D=A\n` +
-        `@5\n` +
-        `A=D+A\n` +
-        `D=A\n` +
-        `@SP\n` +
-        `A=M\n` +
-        `D=A-D\n` +
-        `@ARG\n` +
-        `M=D\n` +
-        `@SP\n` +
-        `A=M\n` +
-        `D=A\n` +
-        `@LCL\n` +
-        `M=D\n`
-    );
+    const callString = getCallString(funName, numArgs);
+    this.#appendToFile(callString);
     this.writeGoTo(functionName);
     this.writeLabel(`RETURN.${funName}`);
-
-    // push return-address // (Using the label declared below)
-    // push LCL // Save LCL of the calling function
-    // push ARG // Save ARG of the calling function
-    // push THIS // Save THIS of the calling function
-    // push THAT // Save THAT of the calling function
-    // ARG = SP-n-5 // Reposition ARG (n ¼ number of args.)
-    // LCL = SP // Reposition LCL
-    // goto f // Transfer control
-    // (return-address) // Declare a label for the return-address
   }
 
   writeReturn() {

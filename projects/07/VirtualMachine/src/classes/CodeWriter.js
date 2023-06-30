@@ -7,7 +7,7 @@ var _CodeWriter_instances, _CodeWriter_unaryOperation, _CodeWriter_binaryOperati
 import * as fs from "fs";
 import Path from "path";
 import { ARITHMETIC_COMMANDS } from "../types/types.js";
-import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, returnString, } from "../utils/util.js";
+import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, returnString, getCallString, } from "../utils/util.js";
 export class CodeWriter {
     constructor(outputFilePath) {
         _CodeWriter_instances.add(this);
@@ -66,40 +66,8 @@ export class CodeWriter {
         const funName = functionName === "Sys.init"
             ? functionName
             : `${functionName}$${this.funCounter}`;
-        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `@RETURN.${funName}\n` +
-            `D=A\n` +
-            pushToStack +
-            `@LCL\n` +
-            `A=M\n` +
-            `D=A\n` +
-            pushToStack +
-            `@ARG\n` +
-            `A=M\n` +
-            `D=A\n` +
-            pushToStack +
-            `@THIS\n` +
-            `A=M\n` +
-            `D=A\n` +
-            pushToStack +
-            `@THAT\n` +
-            `A=M\n` +
-            `D=A\n` +
-            pushToStack +
-            `@${numArgs}\n` +
-            `D=A\n` +
-            `@5\n` +
-            `A=D+A\n` +
-            `D=A\n` +
-            `@SP\n` +
-            `A=M\n` +
-            `D=A-D\n` +
-            `@ARG\n` +
-            `M=D\n` +
-            `@SP\n` +
-            `A=M\n` +
-            `D=A\n` +
-            `@LCL\n` +
-            `M=D\n`);
+        const callString = getCallString(funName, numArgs);
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, callString);
         this.writeGoTo(functionName);
         this.writeLabel(`RETURN.${funName}`);
     }

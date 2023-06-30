@@ -84,3 +84,39 @@ export const returnString =
   `@R14\n` + // not sure about this jump section
   `A=M\n` +
   `0;JMP\n`;
+
+export const getCallString = (funName: string, numArgs: number) =>
+  `@RETURN.${funName}\n` +
+  `D=A\n` +
+  pushToStack +
+  `@LCL\n` +
+  `A=M\n` +
+  `D=A\n` +
+  pushToStack +
+  `@ARG\n` +
+  `A=M\n` +
+  `D=A\n` +
+  pushToStack +
+  `@THIS\n` +
+  `A=M\n` +
+  `D=A\n` +
+  pushToStack +
+  `@THAT\n` +
+  `A=M\n` +
+  `D=A\n` +
+  pushToStack +
+  `@${numArgs}\n` +
+  `D=A\n` +
+  `@5\n` +
+  `A=D+A\n` +
+  `D=A\n` +
+  `@SP\n` +
+  `A=M\n` +
+  `D=A-D\n` +
+  `@ARG\n` +
+  `M=D\n` +
+  `@SP\n` +
+  `A=M\n` +
+  `D=A\n` +
+  `@LCL\n` +
+  `M=D\n`;
