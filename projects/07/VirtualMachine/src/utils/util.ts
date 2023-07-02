@@ -81,7 +81,7 @@ export const returnString =
   resetSegment("THIS") +
   resetSegment("ARG") +
   resetSegment("LCL") +
-  `@R14\n` + // not sure about this jump section
+  `@R14\n` +
   `A=M\n` +
   `0;JMP\n`;
 
@@ -120,3 +120,18 @@ export const getCallString = (funName: string, numArgs: number) =>
   `D=A\n` +
   `@LCL\n` +
   `M=D\n`;
+
+export const getLabelString = (label: string, funName?: string) =>
+  `(${funName ? funName + "$" : ""}${label})\n`;
+
+export const getJumpString = (
+  label: string,
+  jumpType: string,
+  funName?: string
+) => {
+  const jumpRef = jumpType === "JMP" ? "0" : "D";
+  return `@${funName ? funName + "$" : ""}${label}\n${jumpRef};${jumpType}\n`;
+};
+
+export const getIfString = (label: string, funName?: string) =>
+  popFromTop + `D=M\n` + getJumpString(label, "JNE", funName);

@@ -7,7 +7,7 @@ var _CodeWriter_instances, _CodeWriter_unaryOperation, _CodeWriter_binaryOperati
 import * as fs from "fs";
 import Path from "path";
 import { ARITHMETIC_COMMANDS } from "../types/types.js";
-import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, returnString, getCallString, } from "../utils/util.js";
+import { incrementSP, popFromTop, initialCode, pushToStack, popR1R12, pushR1R12, returnString, getCallString, getLabelString, getIfString, getJumpString, } from "../utils/util.js";
 export class CodeWriter {
     constructor(outputFilePath) {
         _CodeWriter_instances.add(this);
@@ -16,6 +16,7 @@ export class CodeWriter {
         this.name = "";
         this.compCounter = 0;
         this.funCounter = 0;
+        this.funName = "";
         this.fileDescriptor = fs.openSync(this.outputFile, "w");
         this.writeInit();
     }
@@ -53,31 +54,34 @@ export class CodeWriter {
         this.writeCall("Sys.init", 0);
     }
     writeLabel(label) {
-        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `(${label})\n`);
+        const labelString = getLabelString(label, this.funName);
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, labelString);
     }
     writeGoTo(label) {
-        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, `@${label}\n` + `0;JMP\n`);
+        const goToString = getJumpString(label, "JMP", this.funName);
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, goToString);
     }
     writeIf(label) {
-        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
+        const ifString = getIfString(label, this.funName);
+        __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, ifString);
     }
     writeCall(functionName, numArgs) {
         this.funCounter++;
         const funName = functionName === "Sys.init"
             ? functionName
             : `${functionName}$${this.funCounter}`;
-        const callString = getCallString(funName, numArgs);
+        const callString = getCallString(funName, numArgs) +
+            getJumpString(functionName, "JMP") +
+            getLabelString(`RETURN.${funName}`);
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, callString);
-        this.writeGoTo(functionName);
-        this.writeLabel(`RETURN.${funName}`);
     }
     writeReturn() {
         __classPrivateFieldGet(this, _CodeWriter_instances, "m", _CodeWriter_appendToFile).call(this, returnString);
     }
     writeFunction(functionName, numLocals) {
-        this.writeLabel(functionName);
+        this.funName = functionName;
         let counter = 0;
-        let commands = "";
+        let commands = getLabelString(functionName);
         while (counter < numLocals) {
             commands =
                 commands +
@@ -109,14 +113,12 @@ _CodeWriter_instances = new WeakSet(), _CodeWriter_unaryOperation = function _Co
         `D=M\n` +
         popFromTop +
         `D=M-D\n` +
-        `@TRUE.${this.compCounter}\n` +
-        `D;J${op.toUpperCase()}\n` +
+        getJumpString(`TRUE.${this.compCounter}`, `J${op.toUpperCase()}`, this.funName) +
         `D=0\n` +
-        `@FINALLY.${this.compCounter}\n` +
-        `0;JMP\n` +
-        `(TRUE.${this.compCounter})\n` +
+        getJumpString(`FINALLY.${this.compCounter}`, "JMP", this.funName) +
+        getLabelString(`TRUE.${this.compCounter}`, this.funName) +
         `D=-1\n` +
-        `(FINALLY.${this.compCounter})\n` +
+        getLabelString(`FINALLY.${this.compCounter}`, this.funName) +
         `@SP\n` +
         `A=M\n` +
         `M=D\n` +

@@ -10,6 +10,9 @@ import {
   pushR1R12,
   returnString,
   getCallString,
+  getLabelString,
+  getIfString,
+  getJumpString,
 } from "../utils/util.js";
 
 export class CodeWriter {
@@ -18,6 +21,7 @@ export class CodeWriter {
   outputFile: string;
   compCounter: number;
   funCounter: number;
+  funName: string;
   fileDescriptor?: number;
 
   constructor(outputFilePath: string) {
@@ -26,6 +30,7 @@ export class CodeWriter {
     this.name = "";
     this.compCounter = 0;
     this.funCounter = 0;
+    this.funName = "";
     this.fileDescriptor = fs.openSync(this.outputFile, "w");
     this.writeInit();
   }
@@ -64,15 +69,18 @@ export class CodeWriter {
   }
 
   writeLabel(label: string) {
-    this.#appendToFile(`(${label})\n`);
+    const labelString = getLabelString(label, this.funName);
+    this.#appendToFile(labelString);
   }
 
   writeGoTo(label: string) {
-    this.#appendToFile(`@${label}\n` + `0;JMP\n`);
+    const goToString = getJumpString(label, "JMP", this.funName);
+    this.#appendToFile(goToString);
   }
 
   writeIf(label: string) {
-    this.#appendToFile(popFromTop + `D=M\n` + `@${label}\n` + `D;JNE\n`);
+    const ifString = getIfString(label, this.funName);
+    this.#appendToFile(ifString);
   }
 
   writeCall(functionName: string, numArgs: number) {
@@ -81,10 +89,11 @@ export class CodeWriter {
       functionName === "Sys.init"
         ? functionName
         : `${functionName}$${this.funCounter}`;
-    const callString = getCallString(funName, numArgs);
+    const callString =
+      getCallString(funName, numArgs) +
+      getJumpString(functionName, "JMP") +
+      getLabelString(`RETURN.${funName}`);
     this.#appendToFile(callString);
-    this.writeGoTo(functionName);
-    this.writeLabel(`RETURN.${funName}`);
   }
 
   writeReturn() {
@@ -92,9 +101,9 @@ export class CodeWriter {
   }
 
   writeFunction(functionName: string, numLocals: number) {
-    this.writeLabel(functionName);
+    this.funName = functionName;
     let counter = 0;
-    let commands = "";
+    let commands = getLabelString(functionName);
     while (counter < numLocals) {
       commands =
         commands +
@@ -135,14 +144,16 @@ export class CodeWriter {
       `D=M\n` +
       popFromTop +
       `D=M-D\n` +
-      `@TRUE.${this.compCounter}\n` +
-      `D;J${op.toUpperCase()}\n` +
+      getJumpString(
+        `TRUE.${this.compCounter}`,
+        `J${op.toUpperCase()}`,
+        this.funName
+      ) +
       `D=0\n` +
-      `@FINALLY.${this.compCounter}\n` +
-      `0;JMP\n` +
-      `(TRUE.${this.compCounter})\n` +
+      getJumpString(`FINALLY.${this.compCounter}`, "JMP", this.funName) +
+      getLabelString(`TRUE.${this.compCounter}`, this.funName) +
       `D=-1\n` +
-      `(FINALLY.${this.compCounter})\n` +
+      getLabelString(`FINALLY.${this.compCounter}`, this.funName) +
       `@SP\n` +
       `A=M\n` +
       `M=D\n` +

@@ -98,4 +98,10 @@ export const getCallString = (funName, numArgs) => `@RETURN.${funName}\n` +
     `D=A\n` +
     `@LCL\n` +
     `M=D\n`;
+export const getLabelString = (label, funName) => `(${funName ? funName + "$" : ""}${label})\n`;
+export const getJumpString = (label, jumpType, funName) => {
+    const jumpRef = jumpType === "JMP" ? "0" : "D";
+    return `@${funName ? funName + "$" : ""}${label}\n${jumpRef};${jumpType}\n`;
+};
+export const getIfString = (label, funName) => popFromTop + `D=M\n` + getJumpString(label, "JNE", funName);
 //# sourceMappingURL=util.js.map

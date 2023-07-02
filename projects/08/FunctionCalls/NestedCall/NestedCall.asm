@@ -170,8 +170,8 @@ D=M
 @R13
 A=M
 M=D
-(LOOP)
-@LOOP
+(Sys.init$LOOP)
+@Sys.init$LOOP
 0;JMP
 (Sys.main)
 @0
