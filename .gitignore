@@ -10,4 +10,11 @@ tools/
 /projects/09/List
 /projects/09/Square
 /projects/09/Jack OS API.pdf
-/projects/09/Splot/OS
+projects/09/Splot/Array.vm
+projects/09/Splot/Keyboard.vm
+projects/09/Splot/Sys.vm
+projects/09/Splot/String.vm
+projects/09/Splot/Screen.vm
+projects/09/Splot/Output.vm
+projects/09/Splot/Memory.vm
+projects/09/Splot/Math.vm
