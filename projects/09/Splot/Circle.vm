@@ -1,0 +1,73 @@
+function Circle.new 0
+push constant 4
+call Memory.alloc 1
+pop pointer 0
+push argument 0
+pop this 0
+push argument 1
+pop this 1
+push argument 2
+pop this 2
+push constant 20
+pop this 3
+push pointer 0
+call Circle.draw 1
+pop temp 0
+push pointer 0
+return
+function Circle.dispose 0
+push argument 0
+pop pointer 0
+push pointer 0
+call Memory.deAlloc 1
+pop temp 0
+push constant 0
+return
+function Circle.draw 0
+push argument 0
+pop pointer 0
+push constant 0
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 3
+call Screen.drawCircle 3
+pop temp 0
+push this 1
+push this 3
+add
+push constant 11
+call Math.divide 2
+push constant 2
+sub
+push this 0
+push this 3
+add
+push constant 8
+call Math.divide 2
+push constant 2
+sub
+call Output.moveCursor 2
+pop temp 0
+push this 2
+call Output.printChar 1
+pop temp 0
+push constant 0
+return
+function Circle.erase 0
+push argument 0
+pop pointer 0
+call Output.backSpace 0
+pop temp 0
+push constant 0
+not
+call Screen.setColor 1
+pop temp 0
+push this 0
+push this 1
+push this 3
+call Screen.drawCircle 3
+pop temp 0
+push constant 0
+return

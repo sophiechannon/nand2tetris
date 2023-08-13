@@ -12,8 +12,7 @@
 
 - `Screen.setColor`, `Screen.drawCircle` - to draw & erase the circles
 - `Output.moveCursor`, `Output.printChar` - to print the letter
-- `Sys.wait` - can this be used to set the timeout between circles being drawn, or will it pause the whole program?
-- `Keyboard.readChar` or `Keyboard.keyPressed` to identify when the keyboard is pressed
+- `Keyboard.keyPressed` to identify when the keyboard is pressed
 
 ## Required classes
 

@@ -1,0 +1,36 @@
+class Circle {
+   field int x, y; 
+   field char letter;
+   field int radius;
+   
+   constructor Circle new(int Ax, int Ay, char Aletter) {
+      let x = Ax;
+      let y = Ay;
+      let letter = Aletter;
+      let radius = 20;
+      do draw();
+      return this;
+   }
+
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method void draw() {
+      do Screen.setColor(false);
+      do Screen.drawCircle(x, y, radius);
+      do Output.moveCursor(((y + radius) / 11) -2, ((x + radius) / 8) -2);
+      do Output.printChar(letter);
+      return;
+   }
+
+   method void erase() {
+      do Output.backSpace();
+      do Screen.setColor(true);
+      do Screen.drawCircle(x, y, radius);
+      return;
+   }
+
+   
+}

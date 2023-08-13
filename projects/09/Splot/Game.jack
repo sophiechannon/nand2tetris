@@ -1,0 +1,105 @@
+class Game {
+  field String letters;
+
+  constructor Game new() {
+    let letters = String.new(26);
+    do createString();
+    return this;
+  }
+
+  method void dispose() {
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  method void run() {
+    var int counter;
+    var int key; 
+    var int letterAscii;
+    var Circle circle;
+    var boolean exit;
+    var boolean isWon;
+    var boolean isLost;
+    var int nextNumber;
+    let counter = 0;
+    let exit = false;
+
+    do Screen.setColor(true);
+    do Screen.drawRectangle(0, 0, 511, 255);
+
+    while (~exit) {
+      let letterAscii = letters.charAt(counter);
+      let circle = Circle.new(generateRandomInRange(letterAscii, 215), generateRandomInRange(letterAscii, 481), letterAscii);
+      while (key = 0) {
+        let key = Keyboard.keyPressed();
+      }
+      let nextNumber = counter + 1;
+      let counter = nextNumber;
+      do circle.erase();
+      do circle.dispose();
+      if (key = 140)  { let exit = true; }
+      if (key = letterAscii) { 
+        if (counter = letters.length()) { 
+          let exit = true;
+          let isWon = true;
+        }
+      }
+      else {
+        let exit = true;
+        let isLost = true;
+      }
+      while (~(key = 0)) {
+        let key = Keyboard.keyPressed();
+      }
+    } 
+    do Screen.clearScreen();
+    return;
+  }
+
+  method int generateRandom(int seed) {
+  var int result;
+  let result = (seed * 250);
+  return result;
+  }
+
+  method int generateRandomInRange(int seed, int max) {
+  var int randomNumber;
+  var int seedTimes2;
+  var int plusNumber;
+  let randomNumber = generateRandom(seed);
+  let seedTimes2 = seed * 2;
+  let plusNumber = seedTimes2 - 50;
+  return (randomNumber / max) + plusNumber;
+  }
+
+  method void createString() {
+      do letters.appendChar(73);  // 'I'
+      do letters.appendChar(76);  // 'L'
+      do letters.appendChar(87);  // 'W'
+      do letters.appendChar(69);  // 'E'
+      do letters.appendChar(78);  // 'N'
+      do letters.appendChar(80);  // 'P'
+      do letters.appendChar(68);  // 'D'
+      do letters.appendChar(90);  // 'Z'
+      do letters.appendChar(65);  // 'A'
+      do letters.appendChar(71);  // 'G'
+      do letters.appendChar(66);  // 'B'
+      do letters.appendChar(74);  // 'J'
+      do letters.appendChar(77);  // 'M'
+      do letters.appendChar(78);  // 'N'
+      do letters.appendChar(88);  // 'X'
+      do letters.appendChar(83);  // 'S'
+      do letters.appendChar(72);  // 'H'
+      do letters.appendChar(67);  // 'C'
+      do letters.appendChar(84);  // 'T'
+      do letters.appendChar(75);  // 'K'
+      do letters.appendChar(71);  // 'G'
+      do letters.appendChar(81);  // 'Q'
+      do letters.appendChar(82);  // 'R'
+      do letters.appendChar(85);  // 'U'
+      do letters.appendChar(86);  // 'V'
+      do letters.appendChar(89);  // 'Y'
+      return;
+  }
+
+}
