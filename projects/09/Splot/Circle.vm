@@ -34,6 +34,14 @@ push this 1
 push this 3
 call Screen.drawCircle 3
 pop temp 0
+push pointer 0
+call Circle.printLetter 1
+pop temp 0
+push constant 0
+return
+function Circle.printLetter 0
+push argument 0
+pop pointer 0
 push this 1
 push this 3
 add
@@ -68,6 +76,9 @@ push this 0
 push this 1
 push this 3
 call Screen.drawCircle 3
+pop temp 0
+push pointer 0
+call Circle.dispose 1
 pop temp 0
 push constant 0
 return

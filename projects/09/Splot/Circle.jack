@@ -20,15 +20,21 @@ class Circle {
    method void draw() {
       do Screen.setColor(false);
       do Screen.drawCircle(x, y, radius);
-      do Output.moveCursor(((y + radius) / 11) -2, ((x + radius) / 8) -2);
-      do Output.printChar(letter);
+      do printLetter();
       return;
+   }
+
+   method void printLetter() {
+    do Output.moveCursor(((y + radius) / 11) -2, ((x + radius) / 8) -2);
+    do Output.printChar(letter);
+    return;
    }
 
    method void erase() {
       do Output.backSpace();
       do Screen.setColor(true);
       do Screen.drawCircle(x, y, radius);
+      do dispose();
       return;
    }
 
