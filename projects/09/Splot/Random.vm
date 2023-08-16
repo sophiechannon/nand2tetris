@@ -1,0 +1,19 @@
+function Random.generateInRange 3
+push argument 0
+push constant 250
+call Math.multiply 2
+pop local 0
+push argument 0
+push constant 2
+call Math.multiply 2
+pop local 1
+push local 1
+push constant 50
+sub
+pop local 2
+push local 0
+push argument 1
+call Math.divide 2
+push local 2
+add
+return

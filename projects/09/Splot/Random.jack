@@ -1,0 +1,11 @@
+class Random {
+  function int generateInRange(int seed, int max) {
+    var int randomNumber;
+    var int seedTimes2;
+    var int plusNumber;
+    let randomNumber = seed * 250;
+    let seedTimes2 = seed * 2;
+    let plusNumber = seedTimes2 - 50;
+    return (randomNumber / max) + plusNumber;
+  }
+}

@@ -37,14 +37,12 @@ push this 0
 push local 0
 call String.charAt 2
 pop this 4
-push pointer 0
 push this 4
 push constant 215
-call Game.generateRandomInRange 3
-push pointer 0
+call Random.generateInRange 2
 push this 4
 push constant 481
-call Game.generateRandomInRange 3
+call Random.generateInRange 2
 push this 4
 call Circle.new 3
 pop local 2
@@ -94,36 +92,6 @@ pop temp 0
 call Screen.clearScreen 0
 pop temp 0
 push constant 0
-return
-function Game.generateRandom 1
-push argument 0
-pop pointer 0
-push argument 1
-push constant 250
-call Math.multiply 2
-pop local 0
-push local 0
-return
-function Game.generateRandomInRange 3
-push argument 0
-pop pointer 0
-push pointer 0
-push argument 1
-call Game.generateRandom 2
-pop local 0
-push argument 1
-push constant 2
-call Math.multiply 2
-pop local 1
-push local 1
-push constant 50
-sub
-pop local 2
-push local 0
-push argument 2
-call Math.divide 2
-push local 2
-add
 return
 function Game.setOutcome 0
 push argument 0
