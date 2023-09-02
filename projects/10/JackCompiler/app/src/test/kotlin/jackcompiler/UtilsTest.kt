@@ -31,4 +31,14 @@ class UtilsTest {
             val resFalse = isString("s")
             assertEquals(resFalse, false)
         }
+
+    @Test
+    fun isInteger() {
+        val zero = jackcompiler.isInteger('0')
+        assertEquals(zero, true)
+        val nine = jackcompiler.isInteger('9')
+        assertEquals(nine, true)
+        val resFalse = jackcompiler.isInteger('t')
+        assertEquals(resFalse, false)
+    }
 }

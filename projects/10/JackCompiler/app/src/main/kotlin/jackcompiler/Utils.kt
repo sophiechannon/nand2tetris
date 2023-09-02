@@ -18,3 +18,7 @@ fun isSymbol(string: String, symbols: Array<Char>): Boolean {
 fun isString(string: String): Boolean {
     return string == "\""
 }
+
+fun isInteger(string: Char): Boolean {
+    return string.code in 48..57
+}

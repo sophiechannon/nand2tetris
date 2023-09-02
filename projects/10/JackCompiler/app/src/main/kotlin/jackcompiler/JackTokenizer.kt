@@ -9,7 +9,8 @@ class JackTokenizer(private val inputStream: String) {
     var charCounter = 0;
     private val scanner = Scanner(File(inputStream))
     var currentLine: String = scanner.nextLine()
-    var isWritingString = false
+    private var isWritingString = false
+    private var isWritingInteger = false
 
     private val keywords = arrayOf(
         "class", "constructor", "function",
@@ -37,31 +38,22 @@ class JackTokenizer(private val inputStream: String) {
             charCounter = 0
         }
         tokens@ while (!isKeywordOrSymbol(newToken)) {
-            comments@ while (lineStartsWithComment(currentLine) || removeWhitespace(currentLine) .isNullOrEmpty()) {
-                advanceLineAndClean()
-            }
-
-            empty@ while (newToken.isNullOrEmpty() && isSpace(currentLine[charCounter])) {
-                charCounter++
-            }
+            skipCommentsAndEmptyLines()
+            skipSpaces(newToken)
 
             if (isString(newToken)) {
-                isWritingString = true
-                    string@ while (isWritingString) {
-                        newToken = newToken.plus(currentLine[charCounter])
-                        charCounter++
-                        if (isString(newToken[newToken.length - 1].toString())) {
-                            isWritingString = false
-                            break@tokens
-                        }
-                    }
-            }
-            if (newToken.isNotEmpty() && isSpace(currentLine[charCounter])) {
-                charCounter++
+                newToken = handleStringConstants(newToken)
                 break@tokens
             }
 
-            if (newToken.isNotEmpty() && isSymbol(currentLine[charCounter].toString(), symbols)) {
+            if (isInteger(currentLine[charCounter])) {
+                newToken = handleIntegerConstants()
+            }
+            if (isConjoinedKeywordAndSymbol(newToken)) {
+                charCounter++
+                break@tokens
+            }
+            if (isIndentifier(newToken)) {
                 break@tokens
             }
 
@@ -69,9 +61,7 @@ class JackTokenizer(private val inputStream: String) {
             charCounter++
 
         }
-        if (removeWhitespace(newToken).isNotEmpty()) {
-            currentToken = newToken.trim()
-        }
+        setCurrentToken(newToken)
         println(currentToken)
         return
     }
@@ -96,7 +86,59 @@ class JackTokenizer(private val inputStream: String) {
     }
 
     private fun advanceLineAndClean() {
-        currentLine = scanner.nextLine()
+        currentLine = scanner.nextLine().trim()
     }
 
+    private fun handleStringConstants(token: String): String {
+        var newToken = token
+        isWritingString = true
+        string@ while (isWritingString) {
+            newToken = newToken.plus(currentLine[charCounter])
+            charCounter++
+            if (isString(newToken[newToken.length - 1].toString())) {
+                isWritingString = false
+            }
+        }
+        return newToken
+    }
+
+    private fun handleIntegerConstants(): String {
+        var newToken = ""
+        isWritingInteger = true
+        while (isWritingInteger) {
+            if (!isInteger(currentLine[charCounter])) {
+                isWritingInteger = false
+                break
+            }
+            newToken = newToken.plus(currentLine[charCounter])
+            charCounter++
+            }
+        return newToken
+    }
+
+    private fun isConjoinedKeywordAndSymbol(token: String): Boolean {
+        return token.isNotEmpty() && isSpace(currentLine[charCounter])
+    }
+
+    private fun skipCommentsAndEmptyLines() {
+        while (lineStartsWithComment(currentLine) || removeWhitespace(currentLine).isNullOrEmpty()) {
+            advanceLineAndClean()
+        }
+    }
+
+    private fun skipSpaces(token: String) {
+        while (token.isNullOrEmpty() && isSpace(currentLine[charCounter])) {
+            charCounter++
+        }
+    }
+
+    private fun isIndentifier(token: String): Boolean {
+        return token.isNotEmpty() && isSymbol(currentLine[charCounter].toString(), symbols)
+    }
+
+    private fun setCurrentToken(token: String) {
+        if (removeWhitespace(token).isNotEmpty()) {
+            currentToken = token
+        }
+    }
 }
