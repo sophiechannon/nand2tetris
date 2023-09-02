@@ -1,0 +1,6 @@
+class Test {
+    fun main() {
+        do Output.println();
+        return;
+    }
+}

@@ -1,0 +1,8 @@
+class Main {
+    function main() {
+        var myString = "THIS IS A STRING";
+        var my_int = 12345;
+        do Output.println("hi");
+        return;
+    }
+}
