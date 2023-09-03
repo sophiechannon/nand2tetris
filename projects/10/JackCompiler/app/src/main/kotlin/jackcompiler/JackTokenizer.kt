@@ -5,7 +5,7 @@ import java.util.Scanner
 
 
 class JackTokenizer(private val inputStream: String) {
-    private var currentToken = ""
+    private var currentToken: String = ""
     private var charCounter = 0;
     private val scanner = Scanner(File(inputStream))
     private var currentLine: String = scanner.nextLine()
@@ -67,6 +67,15 @@ class JackTokenizer(private val inputStream: String) {
         }
         setCurrentTokenAndType(newToken, newTokenType)
         return
+    }
+
+    fun keyword(): String? {
+        return if (tokenType == "KEYWORD") {
+            currentToken.uppercase()
+        } else {
+            null
+        }
+
     }
 
     private fun handleNewLine() {

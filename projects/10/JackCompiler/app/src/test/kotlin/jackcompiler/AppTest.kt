@@ -21,17 +21,23 @@ class AppTest {
         assertEquals(tokenizer.hasMoreTokens(), false)
     }
 
+    // tests token type and output
     @Test
     fun tokenType() {
         val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "CLASS")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "FUNCTION")
+        tokenizer.advance();
+        assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "VOID")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
         tokenizer.advance();
@@ -42,6 +48,7 @@ class AppTest {
         assertEquals(tokenizer.tokenType, "SYMBOL")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "VAR")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
         tokenizer.advance();
@@ -52,6 +59,7 @@ class AppTest {
         assertEquals(tokenizer.tokenType, "SYMBOL")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "LET")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
         tokenizer.advance();
@@ -62,6 +70,7 @@ class AppTest {
         assertEquals(tokenizer.tokenType, "SYMBOL")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "DO")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
         tokenizer.advance();
@@ -78,15 +87,24 @@ class AppTest {
         assertEquals(tokenizer.tokenType, "SYMBOL")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "RETURN")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+    }
 
-
-
-
+    @Test
+    fun keyword() {
+        val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
+        tokenizer.advance();
+        assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.keyword(), "CLASS")
+        tokenizer.advance();
+        assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.keyword(), null)
     }
 }
+

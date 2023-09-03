@@ -1,7 +1,9 @@
+// not real Jack code
+
 class Main {
-    function main() {
+    function void main() {
         var myString = "THIS IS A STRING";
-        var my_int = 12345;
+        let my_int = 12345;
         do Output.println("hi");
         return;
     }
