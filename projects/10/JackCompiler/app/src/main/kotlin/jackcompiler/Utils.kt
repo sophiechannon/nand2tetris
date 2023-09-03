@@ -8,13 +8,6 @@ fun isSpace(string: Char): Boolean {
     return string == ' '
 }
 
-fun isSymbol(string: String, symbols: Array<Char>): Boolean {
-    if (string.isNullOrEmpty()) {
-        return false
-    };
-    return symbols.joinToString().contains(string)
-}
-
 fun isString(string: String): Boolean {
     return string == "\""
 }

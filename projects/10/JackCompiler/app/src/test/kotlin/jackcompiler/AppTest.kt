@@ -21,6 +21,67 @@ class AppTest {
         assertEquals(tokenizer.hasMoreTokens(), false)
     }
 
+    @Test
+    fun keyword() {
+        val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
+        tokenizer.advance();
+        assertEquals(tokenizer.keyword(), "CLASS")
+        tokenizer.advance();
+        assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.keyword(), null)
+    }
+
+    @Test
+    fun symbol() {
+        val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
+        tokenizer.advance();
+        assertEquals(tokenizer.symbol(), null)
+        tokenizer.advance();
+        tokenizer.advance();
+        assertEquals(tokenizer.symbol(), '{')
+    }
+
+
+    @Test
+    fun identifier() {
+        val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
+        tokenizer.advance();
+        assertEquals(tokenizer.tokenType, "KEYWORD")
+        assertEquals(tokenizer.identifier(), null)
+        tokenizer.advance();
+        assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.identifier(), "Main")
+    }
+
+
+    @Test
+    fun intVal() {
+        var counter = 17
+        val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
+        tokenizer.advance();
+        assertEquals(tokenizer.intVal(), null)
+        while (counter > 0) {
+            tokenizer.advance()
+            counter--
+        }
+        assertEquals(tokenizer.tokenType, "INT_CONST")
+        assertEquals(tokenizer.intVal(), 12345)
+    }
+
+    @Test
+    fun stringVal() {
+        var counter = 12
+        val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
+        tokenizer.advance();
+        assertEquals(tokenizer.stringVal(), null)
+        while (counter > 0) {
+            tokenizer.advance()
+            counter--
+        }
+        assertEquals(tokenizer.tokenType, "STRING_CONST")
+        assertEquals(tokenizer.stringVal(), "THIS IS A STRING")
+    }
+
     // tests token type and output
     @Test
     fun tokenType() {
@@ -30,8 +91,10 @@ class AppTest {
         assertEquals(tokenizer.keyword(), "CLASS")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.identifier(), "Main")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '{')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
         assertEquals(tokenizer.keyword(), "FUNCTION")
@@ -40,71 +103,84 @@ class AppTest {
         assertEquals(tokenizer.keyword(), "VOID")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.identifier(), "main")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '(')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), ')')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '{')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
         assertEquals(tokenizer.keyword(), "VAR")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.identifier(), "myString")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '=')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "STRING_CONST")
+        assertEquals(tokenizer.stringVal(), "THIS IS A STRING")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), ';')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
         assertEquals(tokenizer.keyword(), "LET")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.identifier(), "my_int")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '=')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "INT_CONST")
+        assertEquals(tokenizer.intVal(), 12345)
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), ';')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
         assertEquals(tokenizer.keyword(), "DO")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.identifier(), "Output")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '.')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "IDENTIFIER")
+        assertEquals(tokenizer.identifier(), "println")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '(')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "STRING_CONST")
+        assertEquals(tokenizer.stringVal(), "hi")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), ')')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), ';')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "KEYWORD")
         assertEquals(tokenizer.keyword(), "RETURN")
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), ';')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
+        assertEquals(tokenizer.symbol(), '}')
         tokenizer.advance();
         assertEquals(tokenizer.tokenType, "SYMBOL")
-    }
-
-    @Test
-    fun keyword() {
-        val tokenizer = JackTokenizer("./src/test/resources/test2.jack")
-        tokenizer.advance();
-        assertEquals(tokenizer.tokenType, "KEYWORD")
-        assertEquals(tokenizer.keyword(), "CLASS")
-        tokenizer.advance();
-        assertEquals(tokenizer.tokenType, "IDENTIFIER")
-        assertEquals(tokenizer.keyword(), null)
+        assertEquals(tokenizer.symbol(), '}')
     }
 }
+
+
 

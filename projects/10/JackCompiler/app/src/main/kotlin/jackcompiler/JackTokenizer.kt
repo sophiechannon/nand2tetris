@@ -78,6 +78,30 @@ class JackTokenizer(private val inputStream: String) {
 
     }
 
+    fun symbol(): Char? {
+        return if (tokenType == "SYMBOL") {
+            currentToken[0]
+        } else null
+    }
+
+    fun identifier(): String? {
+        return if (tokenType == "IDENTIFIER") {
+            currentToken
+        } else null
+    }
+
+    fun intVal(): Int? {
+        return if (tokenType == "INT_CONST") {
+            currentToken.toInt()
+        } else null
+    }
+
+    fun stringVal(): String? {
+        return if (tokenType == "STRING_CONST") {
+            currentToken.substring(1, currentToken.length - 1)
+        } else null
+    }
+
     private fun handleNewLine() {
         if (currentLine.length == charCounter) {
             advanceLine()
@@ -85,12 +109,19 @@ class JackTokenizer(private val inputStream: String) {
         }
     }
 
+    private fun isSymbol(string: String): Boolean {
+        if (string.isNullOrEmpty()) {
+            return false
+        };
+        return symbols.joinToString().contains(string)
+    }
+
     private fun isKeywordOrSymbol(string: String): Boolean {
         if (string.isNullOrEmpty()) {
             return false
         };
         return keywords.contains(string) ||
-                isSymbol(string, symbols)
+                isSymbol(string)
     }
 
     private fun lineStartsWithComment(string: String): Boolean {
@@ -152,12 +183,12 @@ class JackTokenizer(private val inputStream: String) {
     }
 
     private fun isIndentifier(token: String): Boolean {
-        return token.isNotEmpty() && isSymbol(currentLine[charCounter].toString(), symbols)
+        return token.isNotEmpty() && isSymbol(currentLine[charCounter].toString())
     }
 
     private fun setCurrentTokenAndType(token: String, newTokenType: String) {
         if (removeWhitespace(token).isNotEmpty()) {
-            tokenType = if (isSymbol(token, symbols)) {
+            tokenType = if (isSymbol(token)) {
                 "SYMBOL"
             } else if (isKeywordOrSymbol(token)) {
                 "KEYWORD"
