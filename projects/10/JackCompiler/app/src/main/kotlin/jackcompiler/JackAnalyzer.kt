@@ -3,9 +3,17 @@
  */
 package jackcompiler
 
+import java.io.File
+
+
 fun main() {
-    var tokenizer = JackTokenizer("../ArrayTest/Main.jack")
+    val tokenizer = JackTokenizer("../ArrayTest/Main.jack")
+    val outputT = File("../ArrayTest/MainToken.xml")
+
     while (tokenizer.hasMoreTokens()) {
         tokenizer.advance()
     }
+
 }
+
+
