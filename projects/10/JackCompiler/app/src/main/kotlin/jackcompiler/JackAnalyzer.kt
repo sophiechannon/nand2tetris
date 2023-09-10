@@ -4,16 +4,22 @@
 package jackcompiler
 
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 
 
-fun main() {
-    val tokenizer = JackTokenizer("../ArrayTest/Main.jack")
-    val outputT = File("../ArrayTest/MainToken.xml")
-
-    while (tokenizer.hasMoreTokens()) {
-        tokenizer.advance()
-    }
-
+fun main(args: Array<String>) {
+    Files.walk(Paths.get("../Square"))
+        .filter {
+            it.toString().endsWith(".jack")
+        }
+        .forEach {
+            val tokenizer = JackTokenizer(it.toString())
+            while (tokenizer.hasMoreTokens()) {
+                tokenizer.advance()
+            }
+        }
+//    val outputT = File("../ArrayTest/MainToken.xml")
 }
 
 

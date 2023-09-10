@@ -11,7 +11,7 @@ class JackTokenizer(private val inputStream: String) {
     private var currentLine: String = scanner.nextLine()
     private var isWritingString = false
     private var isWritingInteger = false
-    private val outputT = File(inputStream.replace(".jack", "T.xml"))
+    private val outputT = File(inputStream.replace(".jack", "TokenTest.xml"))
     var tokenType: String = ""
 
     init {
@@ -51,6 +51,12 @@ class JackTokenizer(private val inputStream: String) {
         tokens@ while (!isKeywordOrSymbol(newToken)) {
             skipCommentsAndEmptyLines()
             skipSpaces(newToken)
+
+            if (isInlineComment(newToken)) {
+                advanceAndReset()
+                newToken = ""
+                return
+            }
 
             if (isString(newToken)) {
                 newToken = handleStringConstants(newToken)
@@ -144,14 +150,24 @@ class JackTokenizer(private val inputStream: String) {
     }
 
     private fun isKeywordOrSymbol(string: String): Boolean {
-        if (string.isNullOrEmpty()) {
+        if (string.isNullOrEmpty() || isInlineComment(string)) {
             return false
         };
+
         return keywords.contains(string) ||
                 isSymbol(string)
     }
 
-    private fun lineStartsWithComment(string: String): Boolean {
+    private fun isInlineComment(string: String): Boolean {
+        if (string == "/") {
+            if (charCounter < currentLine.length - 1) {
+                return currentLine.substring(charCounter -1, charCounter + 1) == "//"
+            }
+        }
+        return false
+    }
+
+    private fun startsWithComment(string: String): Boolean {
         var included = false
         for (comment: String in comments) {
             if (string.startsWith(comment)) {
@@ -198,7 +214,7 @@ class JackTokenizer(private val inputStream: String) {
     }
 
     private fun skipCommentsAndEmptyLines() {
-        while (lineStartsWithComment(currentLine)
+        while (startsWithComment(currentLine)
             || removeWhitespace(currentLine).isNullOrEmpty()) {
             advanceLine()
         }
@@ -227,6 +243,11 @@ class JackTokenizer(private val inputStream: String) {
             }
             currentToken = token
         }
+    }
+
+    private fun advanceAndReset() {
+        advanceLine()
+        charCounter = 0
     }
 
     private fun handleXmlChars(char: Char?): String? {
