@@ -6,6 +6,7 @@ package jackcompiler
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import kotlin.io.path.isRegularFile
 
 
 fun main(args: Array<String>) {
@@ -14,6 +15,7 @@ fun main(args: Array<String>) {
             it.toString().endsWith(".jack")
         }
         .forEach {
+            println(it.toString())
             val tokenizer = JackTokenizer(it.toString())
             while (tokenizer.hasMoreTokens()) {
                 tokenizer.advance()

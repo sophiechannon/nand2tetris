@@ -82,6 +82,17 @@ class AppTest {
         assertEquals(tokenizer.stringVal(), "THIS IS A STRING")
     }
 
+    @Test
+    fun hasMoreTokensHandlesWhiteSpace() {
+        val tokenizer = JackTokenizer("./src/test/resources/test3.jack")
+        var counter = 0
+        while (tokenizer.hasMoreTokens()) {
+            tokenizer.advance();
+            counter ++
+        }
+        assertEquals(counter, 1)
+    }
+
     // tests token type and output
     @Test
     fun tokenType() {

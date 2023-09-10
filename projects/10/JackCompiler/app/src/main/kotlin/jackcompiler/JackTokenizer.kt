@@ -8,7 +8,7 @@ class JackTokenizer(private val inputStream: String) {
     private var currentToken: String = ""
     private var charCounter = 0;
     private val scanner = Scanner(File(inputStream))
-    private var currentLine: String = scanner.nextLine()
+    private var currentLine: String = scanner.nextLine().trim()
     private var isWritingString = false
     private var isWritingInteger = false
     private val outputT = File(inputStream.replace(".jack", "TokenTest.xml"))
@@ -31,14 +31,14 @@ class JackTokenizer(private val inputStream: String) {
         '|', '<', '>', '=', '~'
     )
 
-    val tokenTypes = mapOf(
+    private val tokenTypes = mapOf(
         "KEYWORD" to "keyword", "SYMBOL" to "symbol", "IDENTIFIER" to "identifier", "STRING_CONST" to "stringConstant", "INT_CONST" to "integerConstant"
     )
 
-    private val comments = arrayOf("//", "/**", "/*")
+    private val comments = arrayOf("//", "/**", "/*", "*")
 
     fun hasMoreTokens(): Boolean {
-        var hasMore = scanner.hasNextLine() || currentLine.length > charCounter
+        var hasMore = moreTokens()
         if (!hasMore) { finishWriting() }
         return hasMore
     }
@@ -50,6 +50,11 @@ class JackTokenizer(private val inputStream: String) {
 
         tokens@ while (!isKeywordOrSymbol(newToken)) {
             skipCommentsAndEmptyLines()
+
+            if (!moreTokens()) {
+                return
+            }
+
             skipSpaces(newToken)
 
             if (isInlineComment(newToken)) {
@@ -57,7 +62,6 @@ class JackTokenizer(private val inputStream: String) {
                 newToken = ""
                 return
             }
-
             if (isString(newToken)) {
                 newToken = handleStringConstants(newToken)
                 newTokenType = "STRING_CONST"
@@ -80,12 +84,9 @@ class JackTokenizer(private val inputStream: String) {
 
             newToken = newToken.plus(currentLine[charCounter].toString())
             charCounter++
-
         }
         setCurrentTokenAndType(newToken, newTokenType)
         write()
-        println(currentToken)
-        return
     }
 
     fun keyword(): String? {
@@ -120,6 +121,8 @@ class JackTokenizer(private val inputStream: String) {
         } else null
     }
 
+    // private methods
+
     private fun write() {
         var string = "<${tokenTypes[tokenType]}> ${
                 keyword()?.lowercase() 
@@ -137,8 +140,7 @@ class JackTokenizer(private val inputStream: String) {
 
     private fun handleNewLine() {
         if (currentLine.length == charCounter) {
-            advanceLine()
-            charCounter = 0
+            advanceAndReset()
         }
     }
 
@@ -170,7 +172,7 @@ class JackTokenizer(private val inputStream: String) {
     private fun startsWithComment(string: String): Boolean {
         var included = false
         for (comment: String in comments) {
-            if (string.startsWith(comment)) {
+            if (string.trim().startsWith(comment)) {
                 included = true
                 break
             }
@@ -179,7 +181,7 @@ class JackTokenizer(private val inputStream: String) {
     }
 
     private fun advanceLine() {
-        currentLine = scanner.nextLine().trim()
+        currentLine = scanner.nextLine()
     }
 
     private fun handleStringConstants(token: String): String {
@@ -215,16 +217,18 @@ class JackTokenizer(private val inputStream: String) {
 
     private fun skipCommentsAndEmptyLines() {
         while (startsWithComment(currentLine)
-            || removeWhitespace(currentLine).isNullOrEmpty()) {
-            advanceLine()
+            || removeWhitespace(currentLine).isEmpty()) {
+            if (scanner.hasNextLine())
+                advanceLine()
+            else break
         }
     }
 
     private fun skipSpaces(token: String) {
         while (token.isNullOrEmpty()
-            && isSpace(currentLine[charCounter])) {
-            charCounter++
-        }
+                && isSpace(currentLine[charCounter])) {
+                charCounter++
+            }
     }
 
     private fun isIndentifier(token: String): Boolean {
@@ -278,5 +282,9 @@ class JackTokenizer(private val inputStream: String) {
             .replace(">", "&gt;")
             .replace("&", "&amp;")
             .replace("\"", "&quot;")
+    }
+
+    private fun moreTokens(): Boolean {
+        return scanner.hasNextLine() || currentLine.length > charCounter
     }
 }
