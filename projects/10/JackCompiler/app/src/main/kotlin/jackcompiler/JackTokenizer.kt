@@ -5,10 +5,10 @@ import java.util.Scanner
 
 
 class JackTokenizer(private val inputStream: String) {
-    private var currentToken: String = ""
+     var currentToken: String = ""
     private var charCounter = 0;
     private val scanner = Scanner(File(inputStream))
-    private var currentLine: String = scanner.nextLine().trim()
+    var currentLine: String = scanner.nextLine().trim()
     private var isWritingString = false
     private var isWritingInteger = false
     private val outputT = File(inputStream.replace(".jack", "TokenTest.xml"))
@@ -47,10 +47,9 @@ class JackTokenizer(private val inputStream: String) {
         var newTokenType = "IDENTIFIER"
         var newToken = ""
         handleNewLine()
+        skipCommentsAndEmptyLines()
 
         tokens@ while (!isKeywordOrSymbol(newToken)) {
-            skipCommentsAndEmptyLines()
-
             if (!moreTokens()) {
                 return
             }
@@ -58,9 +57,10 @@ class JackTokenizer(private val inputStream: String) {
             skipSpaces(newToken)
 
             if (isInlineComment(newToken)) {
+                newToken = ""
                 advanceAndReset()
-                return
             }
+
             if (isString(newToken)) {
                 newToken = handleStringConstants(newToken)
                 newTokenType = "STRING_CONST"
@@ -120,16 +120,20 @@ class JackTokenizer(private val inputStream: String) {
         } else null
     }
 
+    fun getStringToWrite(): String {
+        return "<${tokenTypes[tokenType]}> ${
+            keyword()?.lowercase()
+                ?: handleXmlChars(symbol())
+                ?: identifier()
+                ?: intVal()
+                ?: handleXmlStrings(stringVal())
+        } </${tokenTypes[tokenType]}>\n"
+    }
+
     // private methods
 
     private fun write() {
-        var string = "<${tokenTypes[tokenType]}> ${
-                keyword()?.lowercase() 
-                ?: handleXmlChars(symbol()) 
-                ?: identifier() 
-                ?: intVal() 
-                ?: handleXmlStrings(stringVal())
-        } </${tokenTypes[tokenType]}>\n"
+        var string = getStringToWrite()
         outputT.appendText(string)
     }
 
@@ -180,7 +184,8 @@ class JackTokenizer(private val inputStream: String) {
     }
 
     private fun advanceLine() {
-        currentLine = scanner.nextLine()
+        currentLine = scanner.nextLine().trim()
+        return
     }
 
     private fun handleStringConstants(token: String): String {
@@ -215,11 +220,13 @@ class JackTokenizer(private val inputStream: String) {
     }
 
     private fun skipCommentsAndEmptyLines() {
-        while (startsWithComment(currentLine)
+        comments@ while (startsWithComment(currentLine)
             || removeWhitespace(currentLine).isEmpty()) {
-            if (scanner.hasNextLine())
+            if (scanner.hasNextLine()) {
                 advanceLine()
-            else break
+
+            }
+            else break@comments
         }
     }
 
@@ -250,6 +257,7 @@ class JackTokenizer(private val inputStream: String) {
 
     private fun advanceAndReset() {
         advanceLine()
+        skipCommentsAndEmptyLines()
         charCounter = 0
     }
 

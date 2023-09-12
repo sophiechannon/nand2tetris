@@ -19,10 +19,10 @@ fun analyzer(path: String) {
         .forEach {
             println(it.toString())
             val tokenizer = JackTokenizer(it.toString())
-            while (tokenizer.hasMoreTokens()) {
-                tokenizer.advance()
-            }
-            CompilationEngine(it.toString().replace(".jack", "T.xml"), it.toString().replace(".jack", "Final.xml"))
+//            while (tokenizer.hasMoreTokens()) {
+//                tokenizer.advance()
+//            }
+            CompilationEngine(tokenizer, it.toString().replace(".jack", "Final.xml"))
         }
 }
 
