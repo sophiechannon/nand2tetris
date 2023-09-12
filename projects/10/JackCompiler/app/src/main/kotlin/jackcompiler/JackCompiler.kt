@@ -9,7 +9,6 @@ import java.nio.file.Paths
 
 fun main(args: Array<String>) {
     analyzer(args[0])
-//    val outputT = File("../ArrayTest/MainToken.xml")
 }
 
 fun analyzer(path: String) {
@@ -23,8 +22,8 @@ fun analyzer(path: String) {
             while (tokenizer.hasMoreTokens()) {
                 tokenizer.advance()
             }
+            CompilationEngine(it.toString().replace(".jack", "T.xml"), it.toString().replace(".jack", "Final.xml"))
         }
-//    val outputT = File("../ArrayTest/MainToken.xml")
 }
 
 
