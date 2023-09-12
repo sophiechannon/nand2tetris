@@ -59,7 +59,6 @@ class JackTokenizer(private val inputStream: String) {
 
             if (isInlineComment(newToken)) {
                 advanceAndReset()
-                newToken = ""
                 return
             }
             if (isString(newToken)) {
