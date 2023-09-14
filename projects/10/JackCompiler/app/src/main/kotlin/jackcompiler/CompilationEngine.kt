@@ -157,6 +157,9 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         indentationCounter ++
         while (tokenizer.hasMoreTokens()) {
             writeAndAdvance()
+            while (isStatement()) {
+                compileStatements()
+            }
             if (isCloseBraces()) {
                 writeAndAdvance()
                 break
