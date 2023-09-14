@@ -6,6 +6,8 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
     private val output = File(outputStream)
     private val classVarDec = arrayOf("STATIC", "FIELD")
     private val subroutine = arrayOf("CONSTRUCTOR", "METHOD", "FUNCTION")
+    private val statements = arrayOf("DO", "WHILE", "RETURN", "LET")
+
     private var indentationCounter = 1
     private var isSubroutineStart = false;
     private var isReadyForExpressionOrParams = false;
@@ -34,8 +36,7 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         writeCategory("<classVarDec>")
         indentationCounter ++
         while (tokenizer.hasMoreTokens()) {
-            write()
-            tokenizer.advance()
+            writeAndAdvance()
             if (isSubroutine()) {
                 break
             }
@@ -50,8 +51,7 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         writeCategory("<subroutineDec>")
         indentationCounter ++
         while (tokenizer.hasMoreTokens() ) {
-            write()
-            tokenizer.advance()
+            writeAndAdvance()
             if (isParamList()) {
                 compileParameterList()
             }
@@ -75,8 +75,7 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         indentationCounter ++
         while (tokenizer.hasMoreTokens()) {
             if (isCloseBrackets()) break
-            write()
-            tokenizer.advance()
+            writeAndAdvance()
         }
         indentationCounter --
         writeCategory("</parameterList>")
@@ -88,13 +87,29 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         writeCategory("<subroutineBody>")
         indentationCounter ++
         while (tokenizer.hasMoreTokens()) {
-            write()
-            tokenizer.advance()
-            if (isCloseBraces()) break
+            if (isVarDec()) {
+                compileVarDec()
+            } else {
+                writeAndAdvance()
+            }
+            if (isCloseBraces()) { break }
         }
-        write()
         indentationCounter --
         writeCategory("</subroutineBody>")
+    }
+
+    fun compileVarDec() {
+        writeCategory("<varDec>")
+        indentationCounter ++
+        while (tokenizer.hasMoreTokens()) {
+            writeAndAdvance()
+            if (isSemiColon()) {
+                writeAndAdvance()
+                break
+            }
+        }
+        indentationCounter --
+        writeCategory("</varDec>")
     }
 
 
@@ -127,15 +142,6 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         return isSubroutineStart && isBraces()
     }
 
-    private fun isBraces(): Boolean {
-        return tokenizer.symbol() === '{'
-    }
-
-    private fun isCloseBraces(): Boolean {
-        return tokenizer.symbol() === '}'
-    }
-
-
     private fun isParamListUpcoming(): Boolean {
         return isOpenBrackets() && isSubroutineStart
     }
@@ -144,11 +150,36 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         return isSubroutineStart && isReadyForExpressionOrParams
     }
 
+    private fun isVarDec(): Boolean {
+        return tokenizer.keyword() == "VAR"
+    }
+
+    private fun isLetDec(): Boolean {
+        return tokenizer.keyword() == "VAR"
+    }
+
     private fun isOpenBrackets(): Boolean {
         return tokenizer.symbol() === '('
     }
 
     private fun isCloseBrackets(): Boolean {
         return tokenizer.symbol() === ')'
+    }
+
+    private fun isBraces(): Boolean {
+        return tokenizer.symbol() === '{'
+    }
+
+    private fun isCloseBraces(): Boolean {
+        return tokenizer.symbol() === '}'
+    }
+
+    private fun isSemiColon(): Boolean {
+        return tokenizer.symbol() === ';'
+    }
+
+    private fun writeAndAdvance() {
+        write()
+        tokenizer.advance()
     }
 }
