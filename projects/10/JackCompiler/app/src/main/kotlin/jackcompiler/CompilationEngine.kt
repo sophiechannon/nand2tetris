@@ -116,18 +116,27 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         writeCategory("<statements>")
         indentationCounter ++
         while (tokenizer.hasMoreTokens()) {
-            if (isLet()) {
-                compileLet()
-            } else if (isWhile()) {
-                compileWhile()
-            } else if (isDo()) {
-                compileDo()
-            } else if (isIf()) {
-                compileIf()
-            } else if (isReturn()) {
-                compileReturn()
-                break
+            if (isStatement()) {
+                if (isLet()) {
+                    compileLet()
+                }
+                if (isWhile()) {
+                    compileWhile()
+                }
+                if (isDo()) {
+                    compileDo()
+                }
+                if (isIf()) {
+                    compileIf()
+                }
+                if (isReturn()) {
+                    compileReturn()
+                    break
+                }
             } else {
+                if (isCloseBraces()) {
+                    break
+                }
                 writeAndAdvance()
             }
         }
@@ -179,6 +188,9 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         indentationCounter ++
         while (tokenizer.hasMoreTokens()) {
             writeAndAdvance()
+            while (isStatement()) {
+                compileStatements()
+            }
             if (isCloseBraces()) {
                 writeAndAdvance()
                 if (!isElse()) {
