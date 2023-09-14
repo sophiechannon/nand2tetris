@@ -20,14 +20,16 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         output.writeText("<class>\n")
         compClass@ while (tokenizer.hasMoreTokens()) {
             tokenizer.advance()
-            if (isClassVarDec()) {
-                compileClassVarDec()
-            } else if (isSubroutine()) {
-                compileSubroutine()
-            } else
+            while (isClassVarDec() || isSubroutine()) {
+                if (isClassVarDec()) {
+                    compileClassVarDec()
+                }
+                if (isSubroutine()) {
+                    compileSubroutine()
+                }
+            }
             write()
         }
-        write()
         indentationCounter --
         output.appendText("</class>")
     }
@@ -120,6 +122,8 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
                 compileWhile()
             } else if (isDo()) {
                 compileDo()
+            } else if (isIf()) {
+                compileIf()
             } else if (isReturn()) {
                 compileReturn()
                 break
@@ -167,6 +171,23 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         handleStatements()
         indentationCounter --
         writeCategory("</returnStatement>")
+    }
+
+
+    fun compileIf() {
+        writeCategory("<ifStatement>")
+        indentationCounter ++
+        while (tokenizer.hasMoreTokens()) {
+            writeAndAdvance()
+            if (isCloseBraces()) {
+                writeAndAdvance()
+                if (!isElse()) {
+                    break
+                }
+            }
+        }
+        indentationCounter --
+        writeCategory("</ifStatement>")
     }
 
 
@@ -237,6 +258,18 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
         return tokenizer.keyword() == "DO"
     }
 
+    private fun isReturn(): Boolean {
+        return tokenizer.keyword() == "RETURN"
+    }
+
+    private fun isIf(): Boolean {
+        return tokenizer.keyword() == "IF"
+    }
+
+    private fun isElse(): Boolean {
+        return tokenizer.keyword() == "ELSE"
+    }
+
     private fun isOpenBrackets(): Boolean {
         return tokenizer.symbol() === '('
     }
@@ -255,10 +288,6 @@ class CompilationEngine(private val tokenizer: JackTokenizer, private val output
 
     private fun isSemiColon(): Boolean {
         return tokenizer.symbol() === ';'
-    }
-
-    private fun isReturn(): Boolean {
-        return tokenizer.keyword() == "RETURN"
     }
 
     private fun writeAndAdvance() {
